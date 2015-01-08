@@ -1,0 +1,191 @@
+---
+title: "R primer techniques"
+author: "Kenny"
+date: "Friday, January 09, 2015"
+output: html_document
+---
+
+## Importing data
+### Read data from a text file
+indata <- read.table("mydata.txt", header=TRUE)
+indata
+indata <- read.table("mydata.txt", header=TRUE, 
+                     na.strings=c("NA", ""))
+indata
+indata <- read.table("mydata.txt", header=TRUE, 
+                     na.strings=c("NA", "", "."))
+indata
+indata <- read.table("d:/mydata.txt", header=TRUE)
+
+
+
+Read data from a simple XML file
+Read data from an XML file
+Read data from an SQL database using ODBC
+Reading spreadsheets
+Read data from a CSV file
+Read data from an Excel spreadsheet
+Read data from an Excel spreadsheet under Windows
+Read data from a LibreOffice or+\thinmuskip {.1667em} OpenOffice Calc spreadsheet
+Read data from the clipboard
+Importing data from other statistical software programs
+Import a SAS dataset
+Import an SPSS dataset
+Import a Stata dataset
+Import a Systat dataset
+Exporting data
+Export data to a text file
+Export a data frame to a CSV file
+Export a data frame to a spreadsheet
+Export a data frame to an Excel spreadsheet under Windows
+Export a data frame to a SAS dataset
+Export a data frame to an SPSS dataset
+Export a data frame to a Stata dataset
+Export a data frame to XML
+Manipulating data
+Using mathematical functions and operations
+Working with common functions
+Working with dates
+Working with character vectors
+Find the value of x corresponding to the maximum or minimum of y
+Check if elements in one object are present in another object
+Transpose a matrix (or data frame)
+Impute values using last observation carried forward
+Convert comma as decimal mark to period
+Working with data frames
+Select a subset of a dataset
+Select the complete cases of a dataset
+Delete a variable from a data frame
+Join datasets
+Merge datasets
+Stack the columns of a data frame together
+Reshape a data frame from wide to long format or vice versa
+Create a table of counts
+Convert a table of counts to a data frame
+Convert a data frame to a vector
+Factors
+Convert a factor to numeric
+Add a new level to an existing factor
+Combine the levels of a factor
+Remove unused levels of a factor
+Cut a numeric vector into a factor
+Transforming variables
+Sort data
+Transform a variable
+Apply a function multiple times to parts of a data frame or array
+Use a Box-Cox transformation to make non-normally distributed data approximately normal
+Calculate the area under a curve
+Statistical analyses
+Descriptive statistics
+Create descriptive tables
+Linear models
+Fit a linear regression model
+Fit a multiple linear regression model
+Fit a polynomial regression model
+Fit a one-way analysis of variance
+Fit a two-way analysis of variance
+Fit a linear normal model
+Generalized linear models
+Fit a logistic regression model
+Fit a multinomial logistic regression model
+Fit a Poisson regression model
+Fit an ordinal logistic regression model
+Methods for analysis of repeated measurements
+Fit a linear mixed-effects model
+Fit a linear mixed-effects model with serial correlation
+Fit a generalized linear mixed model
+Fit a generalized estimating equation model
+Decompose a time series into a trend, seasonal, and residual components
+Analyze time series using an ARMA model
+Specific methods
+Compare populations using t test
+Fit a nonlinear model
+Fit a Tobit regression model
+Model validation
+Test for normality of a single sample
+Test for variance homogeneity across groups
+Validate a linear or generalized linear model
+Contingency tables
+Analysis of two-dimensional contingency tables
+Analyze contingency tables using log-linear models
+Agreement
+Create a Bland-Altman plot of agreement to compare two quantitative methods
+Determine agreement among several methods of a quantitative measurement
+Calculate Cohen's kappa
+Multivariate methods
+Fit a multivariate regression model
+Cluster observations
+Use principal component analysis to reduce data dimensionality
+Fit a principal component regression model
+Classify observations using linear discriminant analysis
+Use partial least squares regression for prediction
+Resampling statistics and bootstrapping
+Non-parametric bootstrap analysis
+Use cross-validation to estimate the performance of a model or algorithm
+Calculate power or sample size for simple designs
+Robust statistics
+Correct p-values for multiple testing
+Non-parametric methods
+Use Wilcoxon's signed rank test to test a sample median
+Use Mann-Whitney's test to compare two groups
+Compare groups using Kruskal-Wallis' test
+Compare groups using Friedman's test for a two-way block design
+Survival analysis
+Fit a Kaplan-Meier survival curve to event history data
+Fit a Cox regression model (proportional hazards model)
+Fit a Cox regression model (proportional hazards model) with time-varying covariates
+Graphics
+Including Greek letters and equations in graphs
+Set colors in R graphics
+Set color palettes in R graphics
+High-level plots
+Create a scatter plot
+Create a histogram
+Make a boxplot
+Create a bar plot
+Create a bar plot with error bars
+Create a plot with estimates and confidence intervals
+Create a pyramid plot
+Plot multiple series
+Make a 2D surface plot
+Make a 3D surface plot
+Plot a 3D scatter plot
+Create a heat map plot
+Plot a correlation matrix
+Make a quantile-quantile plot
+Graphical model validation for linear models
+More advanced graphics
+Create a broken axis to indicate discontinuity
+Create a plot with two y-axes
+Rotate axis labels
+Multiple plots
+Add a legend to a plot
+Add a table to a plot
+Label points in a scatter plot
+Identify points in a scatter plot
+Visualize points, shapes, and surfaces in 3D and interact with them in real-time
+Working with graphics
+Exporting graphics
+Produce graphics output in LaTeX-ready format
+Embed fonts in postscript or pdf graphics
+R
+Getting information
+Getting help
+Finding R source code for a function
+R packages
+Installing R packages
+Update installed R packages
+List the installed packages
+List the content of a package
+List or view vignettes
+Install a package from BioConductor
+Permanently change the default directory where R installs packages
+Automatically load a package when R starts
+The R workspace
+Managing the workspace
+Changing the current working directory
+Saving and loading workspaces
+Saving and loading histories
+Interact with the file system
+Locate and choose files interactively
+Interact with the operating system
