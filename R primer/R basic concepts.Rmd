@@ -4,7 +4,14 @@ author: "Kenny"
 date: "Friday, January 09, 2015"
 output: html_document
 ---
-on is used to set up the graphics parameters that control the layout and look of the graphics  
+### Why full control of graphics in R can be frustrating
+
+> **There are many graphics systems in R, and they don’t necessarily play well with each other**
+
+**Base graphics**  
+
+* is the oldest and most basic. Base graphics produce static pictures        
+* its par function is used to set up the graphics parameters that control the layout and look of the graphics  
 
 **grid**  
 
