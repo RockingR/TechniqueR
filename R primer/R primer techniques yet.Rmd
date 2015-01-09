@@ -1,0 +1,135 @@
+---
+title: "R primer techniques yet"
+author: "Kenny"
+date: "Friday, January 09, 2015"
+output: html_document
+---
+
+
+### Read data from an SQL database using ODBC
+```{r}
+library(RODBC)
+# Connect to SQL database with username and password
+channel <- odbcConnect("mydata", uid="tv", pwd="office") 
+sqlTables(channel)               # List tables in the database
+mydata <- sqlFetch(channel, "paper")      # Fetch entire table
+mydata
+sqlQuery(channel, 
+         "SELECT * FROM paper WHERE Sales>12 ORDER BY Person")
+odbcClose(channel)
+```
+
+
+### Read data from a simple XML file
+
+```{r}
+library(XML)
+url <- "http://www.statistics.life.ku.dk/primer/mydata.xml"
+indata <- xmlToDataFrame(url)
+head(indata)
+```
+
+### Read data from an XML file
+
+```{r}
+library(XML)
+# Location of the example XML file
+url <- "http://www.statistics.life.ku.dk/primer/bank.xml"
+# Parse the tree 
+doc <- xmlTreeParse(url, useInternalNodes=TRUE)
+top <- xmlRoot(doc)         # Identify the root node
+xmlName(top)                # Show node name of root node
+names(top)                  # Name of root node children
+xmlValue(top[[1]])          # Access first element 
+xmlValue(top[["author"]])   # First element with named index
+names(top[[3]])             # Children of node 3
+xmlAttrs(top[[3]][[1]])     # Extract tags from a Date node
+top[["rates"]][[1]][[1]]    # Tree from first bank and date
+xmlValue(top[[3]][[1]][[1]][[1]]) # Bank name is node value
+xmlAttrs(top[[3]][[1]][[1]][[1]]) # but has no tags
+xmlAttrs(top[[3]][[1]][[1]][[2]]) # The  node has tags
+xmlValue(top[[3]][[1]][[1]][[2]]) # but no value
+# Search tree for all source nodes and return their value
+xpathSApply(doc, "//source", xmlValue)
+# Search full tree for all exch nodes where currency is "DKK"
+xpathApply(doc, "//exch[@currency='DKK']", xmlAttrs)
+res <- xpathApply(doc, "//exch",  
+         function(ex) {
+            c(xmlAttrs(ex),
+              bank=xmlValue(xmlParent(ex)[["source"]]),
+              date=xmlGetAttr(xmlParent(xmlParent(ex)), "time"))
+           })
+result <- do.call(rbind, res)
+result
+```
+
+
+
+### Export a data frame to a SAS dataset
+```
+library(SASxport)
+data(trees)
+write. xport(trees, file="datafromR. xpt")
+```
+### Export a data frame to an SPSS dataset
+```
+library(foreign)
+data(trees)
+write. foreign(trees, datafile="mydata. dat", codefile="mydata.sps", package="SPSS")
+```
+
+### Export a data frame to a Stata dataset
+```
+library(foreign)
+data(trees)
+write.dta(trees, file="mydata.dta")
+```
+
+
+### Export a data frame to XML
+```
+library(XML)
+data(trees)
+mydata <- trees # Use cherry trees data as example
+doc <- newXMLDoc() # Start empty XML document tree
+# Start by adding a document tag at the root of the XML file
+root <- newXMLNode("document", doc=doc)
+invisible( # Make output invisible
+lapply(1: nrow(mydata) , # Iterate over all rows
+function(rowi) {
+r <- newXMLNode("row", parent=root) # Create row tag
+for(var in names(mydata) ) { # Iterate over variables
+# Add each observation
+newXMLNode(var, mydata[rowi, var] , parent = r)
+} } ) )
+# Now save the XML document tree as file mydata. xml
+saveXML(doc, file="mydata. xml")
+```
+
+
+
+## Importing data from other statistical software programs
+### Import a SAS dataset
+```
+library(foreign)
+indata <- read.xport("somefile.xpt") # save data in .xpt first
+```
+
+### Import an SPSS dataset
+```
+library(foreign)
+indata <- read.spss("spssfilename.sav", to.data.frame = TRUE) 
+```
+
+### Import a Stata dataset
+```
+library(foreign)
+indata <- read.dta("statafile.dta")
+```
+
+### Import a Systat dataset
+```
+library(foreign)
+indata <- read. systat("systatfile. syd") 
+
+```

@@ -1,0 +1,183 @@
+---
+title: "Basic concepts"
+author: "Kenny"
+date: "Friday, January 09, 2015"
+output: html_document
+---
+on is used to set up the graphics parameters that control the layout and look of the graphics  
+
+**grid**  
+
+* is a much more flexible system of graphics.   
+* there are graph objects (see More R key objects for the idea of “object”).  
+
+**lattice**  
+
+* contains a set of graphics techniques that are very useful for data analysis.
+
+**ggplot2**  
+
+* is a plotting system for R, trying to take the good parts of base and lattice graphics  
+* It takes care of many fiddly details that make plotting a hassle (like drawing legends)  
+* provides a powerful model of graphics that makes it easy to produce complex multi-layered graphics.  
+
+**Useful links**
+
+* Cran Task View on [graphics](http://cran.r-project.org/web/views/Graphics.html)
+
+### how many different objects in R?
+
+**What is an object?**
+
+* assign a name, if you can, it is; if you cannot assign a name to it, it is not
+* something that we can hold, turn upside down, and look at
+
+**What is Attribute?**
+
+* Attributes are spice.
+* objects have a main part, but can have one or more attributes
+* same bowl of rice and beans, with different spice, they are different dishes.
+* name is attribute: 
+    * The elements of an atomic vector can each have a name. 
+    * The components of a list can each have a name.
+* class is a very important attribute.
+
+**What are inherent characteristics of objects?**
+
+* Objects have a “length”. 
+    * The length of an atomic vector is the number of elements it has. 
+    * The length of a list is the number of components that it has. 
+    * The length of NULL is zero.
+
+* Objects have a “mode”. 
+    * This says what kind of object they are. 
+    * mode() function tell you the mode of an object. 
+    * typeof() function tell slightly more specific about an object.
+
+**What are Atomic Types?**
+
+* There are three atomic types  
+    * Numeric objects hold numbers.
+    * Logical objects have values that are TRUE, FALSE and NA.
+    * Character objects have a string as each element.
+
+**What are Matrices and Data Frames?**
+
+* similarities 
+    * matrices and data frames are rectangular objects with rows and columns.
+    * Both are linear structures pretending to be rectangular. 
+    * Both have names for the rows and the columns.
+* differences
+    * A matrix is a vector that has a dim attribute. 
+    * The dim is a vector of two integers saying how many rows and columns there are. 
+    * A data frame has a class attribute that is "data.frame". 
+    * It is really a list with as many components as there are columns. 
+    * Each component has to have the same number of elements (the number of rows).
+    * check with function is.data.frame(x)
+
+**What are Factors?**
+
+* Factors have two key attributes: 
+  
+    * a class attribute and a levels attribute. 
+    * The levels is a character vector that gives the possible categories for the object. 
+    * ???The basic part of the object is a vector of integers that are the location of the category in the levels vector.
+
+
+**Missing values**
+
+* All of the atomic modes have a missing value. 
+    * This is printed as NA.
+    * test for missing values with the is.na function. For example: is.na(x)
+
+
+
+**See inside structure of object**
+
+```{r}
+examp <- list(A=1:10, B=letters, C=list(NULL, TRUE))
+str(examp)
+
+```
+
+**Function are objects too**
+
+
+### What 2.3e6 and 2.3e-4 mean?
+
+* 2.3e6 = 2.3 with decimal point moving right 6
+* 2.3e6 = 2.3 with decimal point moving left 6
+
+### Watch for integer and floating point
+
+* they differ when floating point is result of rounding
+```{r}
+seq(0, 1, by = .1)
+seq(0, 1, by = .1)[4] # the result is rounding outcome, not the real outcome
+seq(0, 1, by = .1)[4] == .3 # therefore it is false not true here
+seq(0, 1, by = .1)[4] - .3 
+print(seq(0, 1, by=.1)[4], digits=20)
+
+```
+
+### How to replace . with ,
+
+**replace . with , by format(, decimal.mark=)**
+```{r}
+format(seq(0, 1, by=.5), decimal.mark=",") # change to , by format(x, decimal.mark = ",")
+
+```
+
+**replace . with , by option at beginning**
+```{r}
+options(OutDec=",")
+seq(0, 1, by=.5)
+```
+
+**use sub() to replace . with ,**
+```{r}
+nums <- format(seq(0, 1, by=.5), decimal.mark=",") # , makes number into strings
+nums
+sub(",", ".", nums) # sub() work with strings?
+as.numeric(sub(",", ".", nums)) # turn string into numbers again
+```
+
+**replace multiple , with nothing**
+```{r}
+as.numeric(gsub(",", "", "2,300,000"))
+```
+
+### How R understand infinity and not-a-number
+
+**What R's limit on infinit**
+
+```{r}
+1e308
+1e308 * 10
+```
+
+**What R consider to be NaN**
+
+```{r}
+0/0
+Inf - Inf
+```
+
+### Understand integer and floating point with examples
+
+**Difference between mode and typeof, numberic and double**
+
+```{r}
+mode(1)
+typeof(1)
+mode(1:2)
+typeof(1:2)
+
+is.integer(1)
+is.integer(1:2)
+is.integer(as.integer(1))
+is.integer(as.double(1:2))
+
+is.integer(1L)
+```
+

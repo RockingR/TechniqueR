@@ -6,49 +6,316 @@ output: html_document
 ---
 
 ## Importing data
-### Read data from a text file
-indata <- read.table("mydata.txt", header=TRUE)
+### Check on directory and files inside
+
+```{r}
+getwd() # to check on the working director
+list.files() # to check all files in this directory, find what you need, e.g."mydata.txt"
+
+```
+
+### Read a text file into R
+```{r}
+read.table("mydata.txt", header=TRUE) # to read the txt file with header
+
+read.table("mydata.txt", header=TRUE, na.strings=c("NA", "")) # any string as "NA" or "" will be returned as NA
+
+read.table("mydata.txt", header=TRUE, na.strings=c("NA", "", ".")) # any string include "." now
+
+read.table("C:/Users/Natusme/Desktop/TechniqueR/1.txt", header=TRUE) # load file anywhere with a detailed address in ""
+
+```
+
+### Read data from a CSV file
+```{r}
+indata <- read.csv("mydata.csv") # use load data in excel to create .csv from .txt
+head(indata)
+```
+
+
+### Read data from an Excel spreadsheet
+
+```
+library(xlsx) # given xlsx package is successfully installed
+## console output should be following
+#### loading xlsxjars
+#### loading rJava
+
+goesforth <- read.xlsx("Documents/cunningplan.xlsx", 1) # 1 refers sheet1, there are rowIndex and colIndex options
+goesforth
+
+Error : .onLoad failed in loadNamespace() for 'rJava', details:
+  call: fun(libname, pkgname)
+  error: JAVA_HOME cannot be determined from the Registry
+Quitting from lines 39-42 (R_primer_techniques.Rmd) 
+����: package 'rJava' could not be loaded
+
+```
+
+### Read data from an Excel spreadsheet under Windows
+```
+library(RODBC) # installed successfully but
+channel <- odbcConnectExcel("example.xls") # odbcConncetExcel() only usale for 32-bit windows
+indata <- sqlFetch(channel, "Sheet1") # there are two sheets created
+odbcClose(channel)
 indata
-indata <- read.table("mydata.txt", header=TRUE, 
-                     na.strings=c("NA", ""))
-indata
-indata <- read.table("mydata.txt", header=TRUE, 
-                     na.strings=c("NA", "", "."))
-indata
-indata <- read.table("d:/mydata.txt", header=TRUE)
+```
+
+
+### Read data from a LibreOffice or OpenOffice Calc spreadsheet
+1. make it a csv file first 
+2. then use read.csv to read data
+
+
+### Read data from the clipboard
+
+```
+mydata <- read.table(file="clipboard", header=TRUE) # Windows/X, and make sure no element is empty
+mydata
+```
+
+```
+mydata <- read.table(pipe("pbpaste") , header=TRUE) # how to do the same on Mac OS X
+mydata
+mydata <- read.table(file="clipboard", sep="\t", header=TRUE) # set the delimilator
+```
+
+
+## Exporting data
+### Export data to a text file
+```{r}
+data(trees)
+head(trees, 2)
+trees$Girth[2] <- NA # Set to missing
+head(trees, 2) # show the changes
+```
+> write into txt from R data
+
+```{r}
+write.table(trees, file="mytrees.txt") # write the changed data into txt which has quotation marks for index number and column names
+write.table(trees, file="mytrees2.txt", quote=FALSE)
+
+```
+
+### Export a data frame to a CSV file
+```{r}
+data(trees)
+write.csv(trees, file="mytrees1.csv") # write.csv2 with ; to seperate data
+```
+
+
+### Export a data frame to a spreadsheet
+> 1. write data from R into csv file
+> 2. read csv file from spreadsheet applications
+
+
+### Export a data frame to an Excel spreadsheet under Windows
+```
+library(xlsReadWrite) 
+data(trees)
+write.xls(trees, "mydata.xls")
+```
+> 1. package ‘xlsReadWrite’ is not available (for R version 3.1.2)
+> 2. try to install it from github and load it for use
+> 3. need to learn how to do it with github
 
 
 
-Read data from a simple XML file
-Read data from an XML file
-Read data from an SQL database using ODBC
-Reading spreadsheets
-Read data from a CSV file
-Read data from an Excel spreadsheet
-Read data from an Excel spreadsheet under Windows
-Read data from a LibreOffice or+\thinmuskip {.1667em} OpenOffice Calc spreadsheet
-Read data from the clipboard
-Importing data from other statistical software programs
-Import a SAS dataset
-Import an SPSS dataset
-Import a Stata dataset
-Import a Systat dataset
-Exporting data
-Export data to a text file
-Export a data frame to a CSV file
-Export a data frame to a spreadsheet
-Export a data frame to an Excel spreadsheet under Windows
-Export a data frame to a SAS dataset
-Export a data frame to an SPSS dataset
-Export a data frame to a Stata dataset
-Export a data frame to XML
-Manipulating data
-Using mathematical functions and operations
-Working with common functions
-Working with dates
-Working with character vectors
-Find the value of x corresponding to the maximum or minimum of y
-Check if elements in one object are present in another object
+### Manipulating data
+```{r}
+vec1 <- 4 # Numeric vector of length 1
+vec1
+vec2 <- c(1, 2, 3, 4, 5, 6, 7) # Numeric vector of length 5
+vec2 # Create a character vector
+vec3 <- c("Spare", "a talent", "for an", "old", "ex-leper")
+vec3 # And a vector of logical values
+vec4 <- c(TRUE, TRUE, FALSE, TRUE, FALSE)
+vec4
+f <- factor(vec3) # Make factor based on vec 3
+f
+x <- 1 + 2i # Enter a complex number
+x
+# sqrt(-1) # R don' t see a complex number
+sqrt(-1 + 0i) # but it does here
+m <- matrix(1: 6, ncol=2) # Create a matrix
+m
+list(vec2, comp=x, m) # Combine 3 different objects
+# data.frame(vec2, f, vec4) # Make a data frame 
+```
+> any code produces warning or error message will stop Rmd to produce
+
+```
+sqrt(-1) # R don' t see a complex number
+
+data.frame(vec2, f, vec4) # Make a data frame 
+
+```
+
+### Using mathematical functions and operations
+
+```
+5/2 + 2*(5. 1 - 2. 3) # Add, subtract, multiply and divide
+2**8 # 2 to the power 8
+61^5 # 1. 61 to the power 5
+10 %% 3 # 10 modulus 3 has remainder 1
+10 %/% 3 # integer division
+abs(-3. 1) # absolute value of -3. 1
+sqrt(5) # square root of 5
+ceiling(4. 3) # smallest integer larger than 4. 3
+floor(4. 3) # largest integer smaller than 4. 3
+trunc(4. 3) # remove decimals
+round(4. 5)
+round(4. 51)
+round(4. 51, digits=1)
+
+# Angles for trigonometric functions use radians - not degrees
+cos(pi/2) # cosine of pi/2.
+sin(pi/4) # sine of pi/4
+tan(pi/6) # tangent of (pi/6)
+log(5) # natural logarithm of 5
+log(5, base=2) # binary logarithm of 5
+log10(5) # common logarithm of 5
+exp(log(5) + log(3) ) # exponential function
+
+# Create two matrices
+x <- matrix(1: 6, ncol=3)
+y <- matrix(c(1, 1, 0, 0, 0, 1) , ncol=2)
+xyx
+%*% y # Matrix multiplication
+y %*% x # Matrix multiplication
+```
+
+
+### Working with common functions
+```
+x <- c(6, 8, 1: 4)
+xm
+ean(x) # mean of x
+median(x) # median
+sd(x) # standard deviation
+IQR(x) # inter-quartile range
+y <- (1: 6) **2 # New vector
+yc
+or(x, y) # Pearson correlation
+cor(x, y, method="spearman") # Spearman correlation
+cor(x, y, method="kendall") # Kendall correlation
+length(x) # length of x
+sum(x) # sum of elements in x
+cumsum(x) # cumulative sum of all elements of x
+sort(x) # sort the vector x
+order(x) # order the elements of x in ascending order
+min(x) # minimum value
+max(x) # maximum value
+quantile(x) # get quartiles
+quantile(x, probs=c(. 15, . 25, . 99) ) # specific quantiles
+x[c(2, 4) ] <- NA # redefine x
+xi
+s. na(x) # identify missing elements
+df <- data. frame(x=c(1, 2, 3, 4) , y=c(2, 1, 3, 2) )
+df
+nrow(df) # number of rows in matrix/data frame
+ncol(df) # number of columns in matrix/data frame
+x # vector with missing values
+sum(x) # sum returns missing
+sum(x, na. rm=TRUE) # unless we remove the NA' s
+mean(x) # mean also returns missing
+mean(x, na. rm=TRUE) # unless we remove the NA' s
+order(x) # order places NA' s last
+sort(x) # sort removes NA altogether
+sort(x, na. last=TRUE) # unless we want to keep them
+sort(x, na. last=TRUE, decreasing=TRUE)
+```
+
+### Working with dates
+```{r}
+today <- Sys.Date() # Current date according to computer system
+today
+date1 <- as.Date("1971-08-20")
+date2 <- as.Date("2011-04-01")
+date2 - date1 # Difference between dates
+# Read dates in the format m/d/y'
+date3 <- c("02/28/2000", "12/20/2001")
+# as.Date(date3)  Error in charToDate(x) : 字符串的格式不够标准明确
+as.Date(date3, "%m/%d/%y") # specify the format is essential
+format(today, "%d %B %Y") # personalize the format for output
+format(today, "%a %d")
+
+```
+
+### manipulate character vectors
+```{r}
+x <- c("Suki", "walk", "to", "the", "well", NA)
+toupper(x) # convert to upper case
+tolower(x) # convert to lower case
+nchar(x) # no. of characters in each element of x
+grep("a", x) # elements that contain letter "a"
+grep("o", x) # elements that contain letter "o"
+substr(x, 2, 3) # extract 2nd to 3rd characters
+substr(x, 2, 3) <- "X" # replace 2nd char with X
+x
+substr(x, 2, 3) <- "XXXX"
+x
+paste(x, "y") # paste "y" to end of each element
+paste(x, "y", sep="-")
+paste(x, "y", sep="-", collapse=" ")
+
+```
+
+
+### Find the value of x corresponding to the maximum or minimum of y
+
+```{r}
+x <- seq(0, pi/2, .2)
+x
+y <- sin(2*x) # as y is created based on x
+y
+x[which.max(y)] # which x correspond to the max y
+```
+
+### Check if elements in one object are present in another object
+```{r}
+x <- c(1, 2, 3, 1, NA, 4)
+y <- c(1, 2, 5, NA)
+x %in% y
+y %in% x
+! x %in% y # Invert result: find objects NOT present
+z <- matrix(1: 6, ncol=2)
+z
+x %in% z
+list(1, 2, 3) %in% list(a=c(1, 2) , b=3) # a as an element
+data.frame(a=c(1, 2), b=c(3, 4) ) %in% data.frame(a=c(2, 1), d=c(1, 2) ) # column as a element to compare
+```
+
+
+### find out what function can do 'combine objects'
+```
+??combine
+```
+
+### find objects with name having “med”
+```
+apropos("med")
+apropos("^med") # find object's name beginning with med
+```
+
+### get help file of a function
+```
+?min
+```
+
+### get example of using function min
+```
+example(min)
+```
+
+### Why full control of graphics in R can be frustrating
+
+> **There are many graphics systems in R, and they don’t necessarily play well with each other**
+
+**Base graphics**  
+
+* is the oldest and most basic. Base graphics produce static pictures        
+* its par functi
 Transpose a matrix (or data frame)
 Impute values using last observation carried forward
 Convert comma as decimal mark to period
