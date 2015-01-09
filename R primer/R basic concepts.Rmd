@@ -4,9 +4,208 @@ author: "Kenny"
 date: "Friday, January 09, 2015"
 output: html_document
 ---
+
+### What is vector
+
+> all vector shall have the elements with same type
+
+> sequence vectors
+```{r}
+5:9
+seq(5, 9)
+seq(5, 9, 0.5)
+```
+
+### retrieve values from a vector
+
+```{r}
+sentence <- c('walk', 'the', 'plank')
+sentence[3]
+
+sentence[1]  # Many languages start array indices at 0, but R's vector indices start at 1
+sentence[3] <- "dog" # assign new values within an existing vector
+
+sentence[4] <- 'to'
+
+sentence[c(1, 3)] # use a vector within the square brackets to access multiple values
+
+sentence[2:4]  # Get the second through fourth words:
+
+sentence[5:7] <- c('the', 'poop', 'deck')
+
+sentence[6]
+```
+
+### assign names to vector's elements
+
+```{r}
+ranks <- 1:3
+names(ranks) <- c("first", "second", "third") # assign names to elements of a vector
+```
+
+### retrieve elements from vector by names
+
+```{r}
+ranks # still vector only with names
+ranks["first"] # still a value element of a vector only with a name
+ranks["third"] <- 4 # assign a different value to the element with name "third"
+```
+
+### barplot to draw vector
+
+```{r}
+barplot(1:100) # draw bars from vector
+vesselsSunk <- c(4, 5, 1)
+barplot(vesselsSunk)
+```
+
+> names of vector elements will show on graphs
+
+```{r}
+names(vesselsSunk) <- c("England", "France", "Norway")
+barplot(vesselsSunk)
+
+```
+
+### Vector math
+
+```{r}
+a <- c(1, 2, 3)
+a + 1
+a == c(1, 99, 3) # each element compare to each element of different vector
+sin(a) # function apply to each element
+
+```
+
+### How to plot two vectors 
+```{r}
+x <- seq(1, 20, 0.1)
+y <- sin(x)
+plot(x, y)
+```
+
+### How to deal with NA
+```{r}
+a <- c(1, 3, NA, 7, 9)
+sum(a)
+sum(a, na.rm = TRUE)
+```
+
+### Difference between matrix and array or vector
+
+> A matrix is just a fancy term for a 2-dimensional array
+
+### Build a matrix
+
+```{r}
+matrix(0, 3, 4) # 3 high, 4 wide, with 0 as value
+
+a <- 1:12
+print(a) # prove a is only a vector
+matrix(a, 3, 4) # a vector is turned into a matrix
+
+plank <- 1:8 # a vector or one dimensional array
+dim(plank) <- c(2, 4) # give this vector(one dim of array) a two dimension attribute
+print(plank) # automatically, the vector is turned into 2-dimension array = matrix
+
+matrix(8, 5, 5) # make matrix with matrix() function, it can be 8 or a vector
+plank <- matrix(1:8, 2, 4, byrow = FALSE)
+print(plank)
+```
+
+### retrieve elements from Matrix
+```{r}
+plank[2, 3]  # as matrix is 2 dim, so two number to locate value
+plank[1, 4]
+plank[1, 4] <- 0
+plank[2,]
+plank[, 4]
+plank[, 2:4]
+```
+
+### matrix plotting
+
+> Text output is only useful when matrices are small. When working with more complex data, we need matrix plotting  
+
+> Let's draw an elevation map of a sandy beach, 1 meter above sea level
+
+```{r}
+elevation <- matrix(1, 10, 10) # we think of a 3D sandy beach 
+elevation[4, 6] <- 0 # we dig down 1 meter at a specific place on the beach
+contour(elevation) # draw a contour map
+persp(elevation) # draw a 3D map, but persp automatically expands the view so that your highest value (the beach surface) is at the very top
+persp(elevation, expand=0.2) # more reasonable graph
+
+```
+> a 3D map of a dormant New Zealand volcano
+
+```{r}
+contour(volcano)
+persp(volcano, expand=0.2)
+image(volcano)
+```
+
+
+### summary statistics on mean
+
+```{r}
+limbs <- c(4, 3, 4, 3, 2, 4, 4, 4) # collect data about crew members
+names(limbs) <- c('One-Eye', 'Peg-Leg', 'Smitty', 'Hook', 'Scooter', 'Dan', 'Mikey', 'Blackbeard')
+mean(limbs)
+barplot(limbs)
+abline(h = mean(limbs)) # draw a horizontal line display mean
+```
+
+### graph ablines differ in sd
+
+```{r}
+pounds <- c(45000, 50000, 35000, 40000, 35000, 45000, 10000, 15000)
+barplot(pounds)
+meanValue <- mean(pounds)
+abline(h = meanValue) # line on mean value
+deviation <- sd(pounds) # value of 1 sd
+abline(h = meanValue + deviation) # line on mean + 1sd
+abline(h = meanValue - deviation)
+```
+
+
+### Create factors
+> Often your data needs to be grouped by category = factors
+
+```{r}
+chests <- c('gold', 'silver', 'gems', 'gold', 'gems')
+types <- factor(chests) # character vector turned into factor, no more quotation marks
+print(chests) # chests is still the same vector
+print(types) # types is the vector chests with factor or levels attribute
+
+as.integer(types) # values of types are not strings but integer references to one of the factor's levels
+levels(types) # but levels themselves are strings or characters, so with quotations
+```
+
+### graph factors with pch  
+> graph the chests by weight and value  
+
+```{r}
+weights <- c(300, 200, 100, 250, 150)
+prices <- c(9000, 5000, 12000, 7500, 18000)
+plot(weights, prices) # both weights and prices correspond to chests or types
+
+plot(weights, prices, pch=as.integer(types)) # converting the factor to integers, and passing it to the pch argument
+
+legend("topright", c("gems", "gold", "silver"), pch=1:3) # make legends to correspond to pch
+
+legend("topright", levels(types), pch=1:length(levels(types))) # make it automatic given future changes
+```
+
+
+
 ### Why full control of graphics in R can be frustrating
 
 > **There are many graphics systems in R, and they don’t necessarily play well with each other**
+
+
+
+
 
 **Base graphics**  
 

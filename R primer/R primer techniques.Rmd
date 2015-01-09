@@ -14,6 +14,12 @@ list.files() # to check all files in this directory, find what you need, e.g."my
 
 ```
 
+### How to run a R file?
+```
+source("filename.R") # given the file is now in the working directory
+```
+
+
 ### Read a text file into R
 ```{r}
 read.table("mydata.txt", header=TRUE) # to read the txt file with header
@@ -308,14 +314,7 @@ apropos("^med") # find object's name beginning with med
 example(min)
 ```
 
-### Why full control of graphics in R can be frustrating
 
-> **There are many graphics systems in R, and they don’t necessarily play well with each other**
-
-**Base graphics**  
-
-* is the oldest and most basic. Base graphics produce static pictures        
-* its par functi
 Transpose a matrix (or data frame)
 Impute values using last observation carried forward
 Convert comma as decimal mark to period
