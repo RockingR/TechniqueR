@@ -198,6 +198,80 @@ legend("topright", levels(types), pch=1:length(levels(types))) # make it automat
 ```
 
 
+### build dataframe
+> 1. same length of all columns
+> 2. same type of data within a column
+> 3. different type of data among different columns is ok
+
+```{r}
+treasure <- data.frame(weights, prices, types)
+print(treasure)
+```
+
+### retrieve column from a dataframe
+
+```{r}
+treasure[[2]] # retrieve the second column
+treasure[["weights"]] # retrieve the column with name weights
+treasure$prices # retrieve the column with name prices
+treasure[["types"]] # get column named types (a vector of factor)
+
+```
+
+### read table and csv and make csv directly from notepad
+```{r}
+read.csv("targets.csv")
+read.table("infantry.txt", sep="\t")
+read.table("infantry.txt", sep="\t", header=TRUE)
+```
+
+### merge dataframes 
+
+```{r}
+merge(x = targets, y = infantry) # same column melt into one, and different ones combine
+```
+
+### merge dataframe and real data
+
+```
+Rank    Country        GDP
+1       Liechtenstein  141100
+2       Qatar          104300
+3       Luxembourg     81100
+4       Bermuda        69900
+
+gdp <- read.table("gdp.txt", sep="  ", header=TRUE)
+
+Country,Piracy
+Australia,23
+Bangladesh,90
+Brunei,67
+China,77
+
+piracy <- read.csv("piracy.csv")
+
+countries <- merge(x = gdp, y = piracy)
+
+plot(count­ries$GDP, count­ries$Pirac­y) 
+
+cor.test(countries$GDP, countries$Piracy) # test for correlation between two vectors
+
+line <- lm(countries$Piracy ~ countries$GDP)
+
+abline(line)
+```
+
+### use ggplot2
+```{r}
+weights <- c(300, 200, 100, 250, 150)
+prices <- c(9000, 5000, 12000, 7500, 18000)
+chests <- c('gold', 'silver', 'gems', 'gold', 'gems')
+types <- factor(chests)
+require(ggplot2)
+qplot(weights, prices, color = types) # color only accept factor
+```
+
+
 
 ### Why full control of graphics in R can be frustrating
 

@@ -315,13 +315,89 @@ example(min)
 ```
 
 
-Transpose a matrix (or data frame)
-Impute values using last observation carried forward
-Convert comma as decimal mark to period
-Working with data frames
-Select a subset of a dataset
-Select the complete cases of a dataset
-Delete a variable from a data frame
+### Transpose a matrix (or data frame)
+```{r}
+m <- matrix(1:6, ncol=2)     # Create matrix
+m
+t(m)                         # Transpose
+mpdat <- data.frame(source=c("KU", "Spain", "Secret", "Attic"),
+                     rats=c(97, 119, 210, 358))
+mpdat
+t(mpdat)
+t(mpdat[,2])
+class(t(mpdat[, 2])) # it is not vector, but matrix
+```
+
+
+
+### Impute values using last observation carried forward
+```{r}
+
+# Start by creating a data frame with missing observation
+id <- factor(rep(c("A", "B", "C"),4))
+time <- rep(1:4, times=3)
+x <- c(1, 2, 3, 4, 5, NA, NA, NA, NA, NA, NA, 6)
+mydata <- data.frame(id, time, x) # build a dataframe
+mydata                  
+order(mydata$id) # reorder id vector and return the index of reordered vector
+mydata[(order(mydata$id)), ] # reorganise the dataframe according to new index
+order(mydata$id, mydata$time) # reorder id vector, then reorder time based on reordered id
+o <- order(mydata$id, mydata$time) 
+newdata <- mydata[o,]   # Ordered data frame
+newdata
+library(zoo)
+# Just using na.locf will carry observations forward 
+# across individuals as the following line show
+na.locf(newdata$x)      # Not working correctly
+na.locf(newdata$x, na.rm = FALSE)
+# Create function that uses na.locf on the correct variable: x
+result <- by(newdata, newdata$id, 
+             function(df) { na.locf(df$x, na.rm=FALSE)})
+result # under C, there are 2 NAs as the first value is NA
+newdata$newx <- unlist(result)  # unlist and add a new column to data frame
+newdata$newx
+newdata
+```
+
+### Convert comma as decimal mark to period sub()
+```{r}
+x <- c("1,2", "1,5", "1,8", "1.9", "2")   # 1,2 can only be string of character not numeric
+as.numeric(sub(",", ".", x))  # Substitute , with . with sub() and then convert to numeric
+f <- factor(x)                # turn strings to factors, levels are strings still
+f
+as.numeric(sub(",", ".", f))  # Substitute , with . and convert
+as.numeric(x)       # Does not work - need to substitute first
+
+```
+
+
+### Select a subset of a dataset with subset()
+```{r}
+data(ToothGrowth)
+str(ToothGrowth) # levels with numbers 
+head(ToothGrowth)
+head(subset(ToothGrowth, dose < 2))
+head(subset(ToothGrowth, dose < 2 & supp == "VC"))
+head(subset(ToothGrowth, dose < 2 & supp == "VC", 
+       select=c("len", "supp"))) # only display two columns
+```
+
+### ignore the row with missing data with complete.cases() 
+```{r}
+data(airquality)
+str(airquality)
+head(airquality)
+complete <- complete.cases(airquality) # assess all elements for NA or not
+complete # True = complete, false = missing
+ccdata <- airquality[complete,] # make complete index to ignore the row with missing element
+head(ccdata)
+complete2 <- complete.cases(airquality$Ozone, airquality$Temp) # only assess 2 columns for missing or complete
+oztemp <- airquality[complete2,] # ignore the rows with missing data from either of the two columns
+head(oztemp)
+```
+
+
+### Delete a variable from a data frame
 Join datasets
 Merge datasets
 Stack the columns of a data frame together
