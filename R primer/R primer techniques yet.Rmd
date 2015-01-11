@@ -133,3 +133,113 @@ library(foreign)
 indata <- read. systat("systatfile. syd") 
 
 ```
+
+
+
+### Use a Box-Cox transformation to make non-normally distributed data approximately normal
+
+```{r}
+library(MASS)
+data(trees)
+result <- boxcox(Volume ~ log(Height) + log(Girth), data=trees,
+                 lambda=seq(-0.5, 0.6, length=13))
+# Find the lambda value with highest profile log-likelihood
+result$x[which.max(result$y)] 
+y <- rnorm(100) + 5       # Generate data
+y2 <- y**2                # Square the results
+result <- boxcox(y2 ~ 1, plotit=FALSE)
+result$x[which.max(result$y)] 
+```
+
+### Calculate the area under a curve
+
+```{r}
+trapezoid <- function(x, y) { 
+                      sum(diff(x)*(y[-1]+y[-length(y)]))/2 }
+x <- 1:4
+y <- c(0, 1, 1, 5)
+trapezoid(x, y)
+x2 <- c(3, 4, 2, 1)  # Reorder the same data
+y2 <- c(1, 5, 1, 0)
+trapezoid(x2, y2)    # We get wrong result
+auc <- function(x, y, from=min(x), to=max(x), ...) {
+                integrate(approxfun(x,y,...), from, to)$value }
+auc(x, y)
+auc(x2, y2)                           # Reordering is fine
+auc(x, y, from=0)                     # AUC from 0 to max(x)
+auc(x, y, from=0, rule=2)             # Allow extrapolation
+auc(x, y, from=0, rule=2, yleft=0)    # Use value 0 to the left
+auc(x, y, from=0, rule=2, yleft=.5)   # Use 1/2 to the left
+data(ChickWeight)
+result <- by(ChickWeight, ChickWeight$Chick, 
+             function(df) { auc(df$Time, df$weight) } )
+head(result)
+# Make sure that each area are based on the same interval
+# from 0 to 21 days. Carry first and last observation
+# backward and forward, respectively
+result2 <- by(ChickWeight, ChickWeight$Chick, function(df) { 
+              auc(df$Time, df$weight, from=0, to=21, rule=2)})
+head(result2)
+```
+
+statistics
+
+Statistical analyses
+Descriptive statistics
+Create descriptive tables
+Linear models
+Fit a linear regression model
+Fit a multiple linear regression model
+Fit a polynomial regression model
+Fit a one-way analysis of variance
+Fit a two-way analysis of variance
+Fit a linear normal model
+Generalized linear models
+Fit a logistic regression model
+Fit a multinomial logistic regression model
+Fit a Poisson regression model
+Fit an ordinal logistic regression model
+Methods for analysis of repeated measurements
+Fit a linear mixed-effects model
+Fit a linear mixed-effects model with serial correlation
+Fit a generalized linear mixed model
+Fit a generalized estimating equation model
+Decompose a time series into a trend, seasonal, and residual components
+Analyze time series using an ARMA model
+Specific methods
+Compare populations using t test
+Fit a nonlinear model
+Fit a Tobit regression model
+Model validation
+Test for normality of a single sample
+Test for variance homogeneity across groups
+Validate a linear or generalized linear model
+Contingency tables
+Analysis of two-dimensional contingency tables
+Analyze contingency tables using log-linear models
+Agreement
+Create a Bland-Altman plot of agreement to compare two quantitative methods
+Determine agreement among several methods of a quantitative measurement
+Calculate Cohen's kappa
+Multivariate methods
+Fit a multivariate regression model
+Cluster observations
+Use principal component analysis to reduce data dimensionality
+Fit a principal component regression model
+Classify observations using linear discriminant analysis
+Use partial least squares regression for prediction
+Resampling statistics and bootstrapping
+Non-parametric bootstrap analysis
+Use cross-validation to estimate the performance of a model or algorithm
+Calculate power or sample size for simple designs
+Robust statistics
+Correct p-values for multiple testing
+Non-parametric methods
+Use Wilcoxon's signed rank test to test a sample median
+Use Mann-Whitney's test to compare two groups
+Compare groups using Kruskal-Wallis' test
+Compare groups using Friedman's test for a two-way block design
+Survival analysis
+Fit a Kaplan-Meier survival curve to event history data
+Fit a Cox regression model (proportional hazards model)
+Fit a Cox regression model (proportional hazards model) with time-varying covariates

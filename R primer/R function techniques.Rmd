@@ -1,0 +1,7 @@
+---
+title: "R function techniques"
+author: "Kenny"
+date: "Sunday, January 11, 2015"
+output: html_document
+---
+

@@ -228,6 +228,8 @@ read.table("infantry.txt", sep="\t", header=TRUE)
 ### merge dataframes 
 
 ```{r}
+targets <- read.csv("targets.csv")
+infantry <- read.table("infantry.txt", sep="\t", header=TRUE)
 merge(x = targets, y = infantry) # same column melt into one, and different ones combine
 ```
 
@@ -252,7 +254,7 @@ piracy <- read.csv("piracy.csv")
 
 countries <- merge(x = gdp, y = piracy)
 
-plot(count­ries$GDP, count­ries$Pirac­y) 
+plot(countï¿½ries$GDP, countï¿½ries$Piracï¿½y) 
 
 cor.test(countries$GDP, countries$Piracy) # test for correlation between two vectors
 
