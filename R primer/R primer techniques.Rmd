@@ -887,7 +887,38 @@ axis(1, 1:length(rownames(coef(summary(fit)))),
 > liw   width of the lower or left error bar. Defaults to same value as uiw. Set to NULL or NA to omit lower bars.
 
 
-Create a pyramid plot
+### Create a pyramid plot
+
+```{r}
+
+library(plotrix)
+men <- c(334700, 357834, 328545, 367201, 411689, 
+         359363, 336841, 178422, 72296, 9552, 139, 0)
+women <- c(318662, 340357, 320462, 365180, 401521, 
+           357405, 345884, 208057, 117843, 27914, 761, 0)
+groups <- paste(seq(0, 110, 10), "-", seq(9, 119, 10), sep="")
+groups                             # Show group labels
+men <- 100*men/sum(men)            # Normalize men
+women <- 100*women/sum(women)      # and women
+men
+women
+pyramid.plot(men, women, labels=groups,
+            lxcol="lightgray", rxcol="lightgray")
+library(MASS)
+data(survey)               
+# Tabulate exercise and smoking status by gender
+result <- by(survey, survey$Sex, 
+             function(x) {table(x$Smoke, x$Exer)})
+result
+pyramid.plot(lx=result$Male, rx=result$Female,
+             labels=row.names(result$Male),
+             gap=10, unit="Number of students",
+             top.labels=c("Male","Smoking Frequency","Female"),
+             lxcol=c("darkgray", "white", "lightgray"),
+             rxcol=c("darkgray", "white", "lightgray"))
+```
+
+
 Plot multiple series
 Make a 2D surface plot
 Make a 3D surface plot
