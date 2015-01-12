@@ -362,5 +362,10 @@ addPercent(small.one)
 
 ```
 
+### find out all method function of a generic function
+```{r}
+apropos("addPercent\\..")
+```
+
 
 
