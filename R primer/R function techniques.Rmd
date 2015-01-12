@@ -4,6 +4,12 @@ author: "Kenny"
 date: "Sunday, January 11, 2015"
 output: html_document
 ---
+---
+title: "R function techniques"
+author: "Kenny"
+date: "Sunday, January 11, 2015"
+output: html_document
+---
 ### writing a R file to perform
 
 > making script
@@ -34,14 +40,25 @@ result
 ### from the script to function
 ```{r}
 
-addPercent <- function(x){                             # leave data to x
-  percent <- round(x * 100, digits = 1)
-  result <- paste(percent, "%", sep = "")
+addPercent <- function(x){                          # leave data to x, and assign function to a nickname
+  percent <- round(x * 100, digits = 1)             # calculation performed
+  result <- paste(percent, "%", sep = "")           # format made
   return(result)                                    # display result = return(result) != print(result)
 }
  
 
 ```
+
+> **structure of a function**    
+
+> 1. The keyword function always must be followed by parentheses. It tells R that what comes next is a function.  
+> 2. The parentheses after function form the front gate, or argument list, of your function. Between the parentheses, the arguments to the function are given. In this case, there’s only one argument, named x.  
+> 3. The braces, {}, can be seen as the walls of your function. Everything between the braces is part of the assembly line, or the body of your function.
+> 4. The return() statement is the back gate of your function. The object you put between the parentheses is returned from inside the function to your workspace. You can put only one object between the parentheses.
+> 5. If you put all this together, you get a complete function, but R doesn’t know where to find it yet. So, you use the assignment operator <- to put this complete function into an object named addPercent. This is the address R can send numbers to for transformation. Now the function has a nice name and is ready to use.
+> 6. If you want to control which type of object is given as an argument, you have to do so manually, in the body of the function.
+
+
 ## Using the function with new data
  
 ```{r}
@@ -51,182 +68,299 @@ addPercent(new.numbers)
 ```
 
 ### Playing with function objects
- 
-ppaste <- addPercent
-ppaste
- 
+```{r}
+
+ppaste <- addPercent # assign the function to a new nickname
+ppaste  # useful for using function inside other functions
+addPercent
+ppaste(new.numbers)
+?ppaste
+```
+> you can effectively erase a function if you accidentally use the same name for another object. Or you could lose data if you accidentally gave the same name as your data object to a function. There’s no undo button in R, but your functions are safe in packages.
+
+### objects you created and can use 
+```{r}
+ls() # let R tell you what objects available to you at the moment
+```
+
+
 ## Reducing the number of lines
  
-### Returning values by default
- 
-# AddPercent function without last return - not written in book
-addPercent <- function(x){
+
+> get rid of return(result) the function is still working
+
+```{r}
+addPercentS <- function(x){
   percent <- round(x * 100, digits = 1)
   result <- paste(percent, "%", sep = "")
+} # once this code is run, the new function object addPercentS is created and ready for use
+ 
+
+print( addPercentS(new.numbers) )
+
+```
+
+> to cut print() we can directly run the following code
+
+```{r}
+
+addPercentS <- function(x){
+  percent <- round(x * 100, digits = 1)
+  paste(percent, "%", sep = "")
 }
- 
-print( addPercent(new.numbers) )
- 
+
+addPercentS(new.numbers)
+```
+
+> return() is useful if you want to test on type of data first and exit without running codes afterwards
+
+```{r}
+
 addPercent <- function(x){
+  if( !is.numeric(x) ) return(NULL) # this is a powerful and self-regulate-help measures
   percent <- round(x * 100, digits = 1)
   paste(percent, "%", sep = "")
 }
  
-addPercent <- function(x){
-  if( !is.numeric(x) ) return(NULL)
-  percent <- round(x * 100, digits = 1)
+```
+### Breaking the walls is a bad habit thought working
+
+> addPercent <- function(x) paste(round(x * 100, digits = 1), "%", sep = "")  
+
+
+ 
+### Understanding arguments in functions
+
+> 1. Arguments are always named when you define the function. But when you call the function, you don’t have to specify the name of the argument if you give them in the order in which they appear in the argument list of a function.  
+> 2. Arguments can be optional, in which case you don’t have to specify a value for them.  
+> 3. Arguments can have a default value, which is used if you didn’t specify a value for that argument yourself.  
+> 4. Not only can you use as many arguments as you like — or as is feasible, at least — but **you can very easily pass arguments on to functions inside the body of your own function with the simply genius `dots` argument**. 
+
+### A slice difference in data can make the simple function look weak
+
+```{r}
+
+percentages <- c(58.23, 120.4, 33) # much unlike new.numbers
+new.numbers
+
+addPercent(percentages) # direct apply percentages will result unwanted outcome
+addPercent(percentages/100) # transformation needed for percentage data, make it look like new.numbers
+
+```
+> the problem is this simple function cannot handle two different nature of data at the same time
+
+### Adding the mult argument to deal with different data with different measures
+```{r}
+
+addPercentCom <- function(x, mult){  # add mult to specify and deal with the different types of data
+  percent <- round(x * mult, digits = 1)
   paste(percent, "%", sep = "")
 }
+
+```
  
-### Breaking the walls
- 
-odds <- function(x) x / (1-x)
- 
-odds(0.8)
- 
-addPercent <- function(x) paste(round(x * 100, digits = 1), "%", sep = "")
- 
-# Using Arguments the Smart Way
- 
-## Adding more arguments
- 
-percentages <- c(58.23, 120.4, 33)
-addPercent(percentages/100)
- 
-### Adding the mult argument
- 
-addPercent <- function(x, mult){
+> now Let's give mult a default value for data more likely to encounter
+```{r}
+
+addPercentCom <- function(x, mult = 100){ # now set default value of mult = 100
   percent <- round(x * mult, digits = 1)
   paste(percent, "%", sep = "")
 }
  
-addPercent(percentages, mult = 1)
+addPercentCom(new.numbers) # as default, no need to specify mult = 100
+
+percentages
+addPercentCom(percentages, 1) # by order, 1 refers to mult = 1, specifically dealing with data like percentages
+```
  
-### Adding a default value
  
-# addPercent(new.numbers) # Gives error for illustrative purposes
-# Error in x * mult : 'mult' is missing
- 
-addPercent <- function(x, mult = 100){
-  percent <- round(x * mult, digits = 1)
+### dots can save a lot of spaces
+```{r}
+
+addPercentDot <- function(x, mult = 100, ...){     # dots here can refer to multi-arguments
+  percent <- round(x * mult, ...)   # dots here can refer to some or all of them
   paste(percent, "%", sep = "")
 }
  
-addPercent(new.numbers)
- 
-addPercent(percentages, 1)
- 
-## Conjuring tricks with dots
- 
-addPercent <- function(x, mult = 100, ...){
-  percent <- round(x * mult, ...)
-  paste(percent, "%", sep = "")
-}
- 
-addPercent(new.numbers, digits = 2)
-addPercent(new.numbers)
+addPercentDot(new.numbers, digits = 2) # replace dots with the argument needed here 
+addPercentDot(new.numbers)
  
  
-addPercent <- function(x, mult = 100, digits = 1){
+addPercentD <- function(x, mult = 100, digits = 1){ # if refuse to use dots, make explicit is good too
   percent <- round(x * mult, digits = digits)
   paste(percent, "%", sep = "")
 }
+
+```
  
-## Using functions as arguments
- 
-### Applying different ways of rounding
- 
-addPercent <- function(x, mult = 100, FUN = round, ...){
-  percent <- FUN(x * mult, ...)
+### Using functions as arguments
+
+>  you can easily assign the complete code of a function to a new object. In much the same way, you also can assign the function code to an argument. This opens up a complete new world of possibilities. 
+
+```{r}
+
+addPercentFun <- function(x, mult = 100, FUN = round, ...){ # FUN = can be any function you want, the default FUN is round; '...' no need to spell out; 
+  
+# !!!! mult = 100, as default value, used within FUN to recalcualte the data before running FUN
+  percent <- FUN(x * mult, ...)  # "..." stand for one argument, and without default value
   paste(percent, "%", sep = "")
 }
  
-addPercent(new.numbers, FUN = signif, digits = 3)
+addPercentFun(new.numbers, FUN = signif, digits = 3) # choose signif for FUN, specify digits = 3 instead of "..." if you know
+
+```
+
+> I feel `...` can only represent one argument only  
+> If you added the parentheses to round as FUN = round() or signif(), you would assign the result of a call to signif() instead of the function itself. R would interpret signif(), in that case, as a nested function, and that’s not what you want.
  
-### Using anonymous functions
+### Using anonymous functions within a function
+
+```{r}
+ls()
+profits <- c(2100, 1430, 3580, 5230)  # set the data
+
+rel.profit <- function(x) round(x / sum(x) * 100) # write a new function to calculate profit/sum percent
+
+rel.profit(profits)
+
+addPercentFun(profits,
+                FUN = function(x) round(x / sum(x) * 100) ) # use addPercent func, make your own FUN = 
  
-profits <- c(2100, 1430, 3580, 5230)
-rel.profit <- function(x) round(x / sum(x) * 100)
-addPercent(profits,
-                FUN = function(x) round(x / sum(x) * 100) )
- 
-addPercent(profits / sum(profits))
- 
-# Coping with Scoping
- 
- 
- 
-## Crossing the borders
+
+```
+
+
+### local and global environment
+
+>  you work solely in the workspace. Every object you create ends up in this environment, which is called the global environment. The workspace — or global environment — is the universe of the R user where everything happens.
  
 ### Creating a test case
  
-x <- 1:5
-test <- function(x){
+```{r}
+
+x <- 1:5 # x here is in global environment
+test <- function(x){  # x here is in the local environment of the function
   cat("This is x:", x, "\n")
-  rm(x)
-  cat("This is x after removing it:",x,"\n")
+  rm(x) # x in local environment has been removed
+  cat("This is x after removing it:",x,"\n") # this code require x object, so R looks for x from global environment
 }
  
-test(5:1)
+test(5:1) # now 5:1 is data within local environment; outcome is 1:5, as x <- 1:5 in global env
+
+```
  
-### Searching the path
- 
-## Using internal functions
- 
-calculate.eff <- function(x, y, control){
-  min.base <- function(z) z - mean(control)
+### global and local env
+
+> the whole concept behind R strongly opposes using global variables used in different functions. As a functional programming language, one of the main ideas of R is that the outcome of a function should not be dependent on anything but the values for the arguments of that function.
+
+```{r}
+
+calculate.eff <- function(x, y, control){  
+  min.base <- function(z) z - mean(control)  # min.base() as internal function will be removed at the end of running calculate.eff()
   min.base(x) / min.base(y)
 }
- 
+
+getwd()
+```
+
+> global and local env path: ![](globaLocalEnv.png)
+
+```{r}
  
 half <- c(2.23, 3.23, 1.48)
 full <- c(4.85, 4.95, 4.12)
 nothing <- c(0.14, 0.18, 0.56, 0.23)
 calculate.eff(half, full, nothing)
  
-# Dispatching to a Method
+
+```
+
+### Dispatching to a Method
+
+> We want to cover one more thing about functions, because you need it to understand how one function can give a different result based on the type of value you give the arguments. R has a genius system, called the generic function system, that allows you to call different functions using the same name.
+
+>  Functions that don’t do much other than passing on objects to the right function are called generic functions. In this example, print() is a generic function. The functions that do the actual work are called methods. So, every method is a function, but not every function is a method.
  
-## Finding the methods behind the function
+```{r}
+print # show what generic function look like inside
+
+# the last two codes only for developers
+
+``` 
+> How on earth can that one line of code in the print() function do so many complex things like printing vectors, data frames, and lists all in a different way? The answer is contained in the UseMethod() function, which is the central function in the generic function system of R. All UseMethod() does is tell R to move along and look for a function that can deal with the type of object that is given as the argument x.
  
-print
+> R does that by looking through the complete set of functions in search of another function that starts with print followed by a dot and then the name of the object type
  
-### Using methods with UseMethod
- 
+
+```{r}
+
 small.one <- data.frame(a = 1:2, b = 2:1)
 print.data.frame(small.one)
+print(small.one)
+print.default(small.one) # this function intend to produce list
+
+```
  
-### Using default methods
  
-print.default(small.one)
  
-## Doing it yourself
+
  
-### Adapting the addPercent function
- 
+### make a S3 function
+
+> Adapting the addPercent function for character vector
+
+```{r}
 addPercent.character <- function(x){
   paste(x,"%",sep="")
 }
+
+```
+
  
-# Not written out in the book - needed for rest code # 
+> the addPercent function for numeric vector
+
+```{r}
+
 addPercent.numeric <- function(x, mult = 100, FUN = round, ...){
   percent <- FUN(x * mult, ...)
   paste(percent, "%", sep = "")
 }
- 
+
+```
+> make the S3 function 
+
+```{r}
+
 addPercent <- function(x,...){
   UseMethod("addPercent")
 }
- 
+
+```
+> now addPercent function can deal with all different data type, R automatically select the right method function for the appropriate data
+
+```{r}
+
 addPercent(new.numbers, FUN = floor)
  
 addPercent(letters[1:6])
  
-# Adding a default function
- 
-addPercent(small.one) # Gives error on purpose
+```
+> Adding a message to avoid dataframe
+
+```{r}
+
+# addPercent(small.one) # Gives error on purpose
+# in console it will produce: 
+### Error in UseMethod(“addPercent”) :
+### no applicable method for ‘addPercent’ applied to an object of class “data.frame”
  
 addPercent.default <- function(x){
   cat('You should try a numeric or character vector.\n')
 }
+
+addPercent(small.one)
+
 ```
+
+
 
