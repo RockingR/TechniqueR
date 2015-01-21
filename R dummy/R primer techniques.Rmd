@@ -1,0 +1,964 @@
+---
+title: "R primer techniques"
+author: "Kenny"
+date: "Friday, January 09, 2015"
+output: html_document
+---
+
+## Importing data
+### Check on directory and files inside
+
+```{r}
+getwd() # to check on the working director
+list.files() # to check all files in this directory, find what you need, e.g."mydata.txt"
+
+```
+
+### How to run a R file?
+```
+source("filename.R") # given the file is now in the working directory
+```
+
+
+### Read a text file into R
+```{r}
+read.table("mydata.txt", header=TRUE) # to read the txt file with header
+
+read.table("mydata.txt", header=TRUE, na.strings=c("NA", "")) # any string as "NA" or "" will be returned as NA
+
+read.table("mydata.txt", header=TRUE, na.strings=c("NA", "", ".")) # any string include "." now
+
+read.table("C:/Users/Natusme/Desktop/TechniqueR/1.txt", header=TRUE) # load file anywhere with a detailed address in ""
+
+```
+
+### Read data from a CSV file
+```{r}
+indata <- read.csv("mydata.csv") # use load data in excel to create .csv from .txt
+head(indata)
+```
+
+
+### Read data from an Excel spreadsheet
+
+```
+library(xlsx) # given xlsx package is successfully installed
+## console output should be following
+#### loading xlsxjars
+#### loading rJava
+
+goesforth <- read.xlsx("Documents/cunningplan.xlsx", 1) # 1 refers sheet1, there are rowIndex and colIndex options
+goesforth
+
+Error : .onLoad failed in loadNamespace() for 'rJava', details:
+  call: fun(libname, pkgname)
+  error: JAVA_HOME cannot be determined from the Registry
+Quitting from lines 39-42 (R_primer_techniques.Rmd) 
+����: package 'rJava' could not be loaded
+
+```
+
+### Read data from an Excel spreadsheet under Windows
+```
+library(RODBC) # installed successfully but
+channel <- odbcConnectExcel("example.xls") # odbcConncetExcel() only usale for 32-bit windows
+indata <- sqlFetch(channel, "Sheet1") # there are two sheets created
+odbcClose(channel)
+indata
+```
+
+
+### Read data from a LibreOffice or OpenOffice Calc spreadsheet
+1. make it a csv file first 
+2. then use read.csv to read data
+
+
+### Read data from the clipboard
+
+```
+mydata <- read.table(file="clipboard", header=TRUE) # Windows/X, and make sure no element is empty
+mydata
+```
+
+```
+mydata <- read.table(pipe("pbpaste") , header=TRUE) # how to do the same on Mac OS X
+mydata
+mydata <- read.table(file="clipboard", sep="\t", header=TRUE) # set the delimilator
+```
+
+
+## Exporting data
+### Export data to a text file
+```{r}
+data(trees)
+head(trees, 2)
+trees$Girth[2] <- NA # Set to missing
+head(trees, 2) # show the changes
+```
+> write into txt from R data
+
+```{r}
+write.table(trees, file="mytrees.txt") # write the changed data into txt which has quotation marks for index number and column names
+write.table(trees, file="mytrees2.txt", quote=FALSE)
+
+```
+
+### Export a data frame to a CSV file
+```{r}
+data(trees)
+write.csv(trees, file="mytrees1.csv") # write.csv2 with ; to seperate data
+```
+
+
+### Export a data frame to a spreadsheet
+> 1. write data from R into csv file
+> 2. read csv file from spreadsheet applications
+
+
+### Export a data frame to an Excel spreadsheet under Windows
+```
+library(xlsReadWrite) 
+data(trees)
+write.xls(trees, "mydata.xls")
+```
+> 1. package ‘xlsReadWrite’ is not available (for R version 3.1.2)
+> 2. try to install it from github and load it for use
+> 3. need to learn how to do it with github
+
+
+
+### Manipulating data
+```{r}
+vec1 <- 4 # Numeric vector of length 1
+vec1
+vec2 <- c(1, 2, 3, 4, 5, 6, 7) # Numeric vector of length 5
+vec2 # Create a character vector
+vec3 <- c("Spare", "a talent", "for an", "old", "ex-leper")
+vec3 # And a vector of logical values
+vec4 <- c(TRUE, TRUE, FALSE, TRUE, FALSE)
+vec4
+f <- factor(vec3) # Make factor based on vec 3
+f
+x <- 1 + 2i # Enter a complex number
+x
+# sqrt(-1) # R don' t see a complex number
+sqrt(-1 + 0i) # but it does here
+m <- matrix(1: 6, ncol=2) # Create a matrix
+m
+list(vec2, comp=x, m) # Combine 3 different objects
+# data.frame(vec2, f, vec4) # Make a data frame 
+```
+> any code produces warning or error message will stop Rmd to produce
+
+```
+sqrt(-1) # R don' t see a complex number
+
+data.frame(vec2, f, vec4) # Make a data frame 
+
+```
+
+### Using mathematical functions and operations
+
+```
+5/2 + 2*(5. 1 - 2. 3) # Add, subtract, multiply and divide
+2**8 # 2 to the power 8
+61^5 # 1. 61 to the power 5
+10 %% 3 # 10 modulus 3 has remainder 1
+10 %/% 3 # integer division
+abs(-3. 1) # absolute value of -3. 1
+sqrt(5) # square root of 5
+ceiling(4. 3) # smallest integer larger than 4. 3
+floor(4. 3) # largest integer smaller than 4. 3
+trunc(4. 3) # remove decimals
+round(4. 5)
+round(4. 51)
+round(4. 51, digits=1)
+
+# Angles for trigonometric functions use radians - not degrees
+cos(pi/2) # cosine of pi/2.
+sin(pi/4) # sine of pi/4
+tan(pi/6) # tangent of (pi/6)
+log(5) # natural logarithm of 5
+log(5, base=2) # binary logarithm of 5
+log10(5) # common logarithm of 5
+exp(log(5) + log(3) ) # exponential function
+
+# Create two matrices
+x <- matrix(1: 6, ncol=3)
+y <- matrix(c(1, 1, 0, 0, 0, 1) , ncol=2)
+xyx
+%*% y # Matrix multiplication
+y %*% x # Matrix multiplication
+```
+
+
+### Working with common functions
+```
+x <- c(6, 8, 1: 4)
+xm
+ean(x) # mean of x
+median(x) # median
+sd(x) # standard deviation
+IQR(x) # inter-quartile range
+y <- (1: 6) **2 # New vector
+yc
+or(x, y) # Pearson correlation
+cor(x, y, method="spearman") # Spearman correlation
+cor(x, y, method="kendall") # Kendall correlation
+length(x) # length of x
+sum(x) # sum of elements in x
+cumsum(x) # cumulative sum of all elements of x
+sort(x) # sort the vector x
+order(x) # order the elements of x in ascending order
+min(x) # minimum value
+max(x) # maximum value
+quantile(x) # get quartiles
+quantile(x, probs=c(. 15, . 25, . 99) ) # specific quantiles
+x[c(2, 4) ] <- NA # redefine x
+xi
+s. na(x) # identify missing elements
+df <- data. frame(x=c(1, 2, 3, 4) , y=c(2, 1, 3, 2) )
+df
+nrow(df) # number of rows in matrix/data frame
+ncol(df) # number of columns in matrix/data frame
+x # vector with missing values
+sum(x) # sum returns missing
+sum(x, na. rm=TRUE) # unless we remove the NA' s
+mean(x) # mean also returns missing
+mean(x, na. rm=TRUE) # unless we remove the NA' s
+order(x) # order places NA' s last
+sort(x) # sort removes NA altogether
+sort(x, na. last=TRUE) # unless we want to keep them
+sort(x, na. last=TRUE, decreasing=TRUE)
+```
+
+### Working with dates
+```{r}
+today <- Sys.Date() # Current date according to computer system
+today
+date1 <- as.Date("1971-08-20")
+date2 <- as.Date("2011-04-01")
+date2 - date1 # Difference between dates
+# Read dates in the format m/d/y'
+date3 <- c("02/28/2000", "12/20/2001")
+# as.Date(date3)  Error in charToDate(x) : 字符串的格式不够标准明确
+as.Date(date3, "%m/%d/%y") # specify the format is essential
+format(today, "%d %B %Y") # personalize the format for output
+format(today, "%a %d")
+
+```
+
+### manipulate character vectors
+```{r}
+x <- c("Suki", "walk", "to", "the", "well", NA)
+toupper(x) # convert to upper case
+tolower(x) # convert to lower case
+nchar(x) # no. of characters in each element of x
+grep("a", x) # elements that contain letter "a"
+grep("o", x) # elements that contain letter "o"
+substr(x, 2, 3) # extract 2nd to 3rd characters
+substr(x, 2, 3) <- "X" # replace 2nd char with X
+x
+substr(x, 2, 3) <- "XXXX"
+x
+paste(x, "y") # paste "y" to end of each element
+paste(x, "y", sep="-")
+paste(x, "y", sep="-", collapse=" ")
+
+```
+
+
+### Find the value of x corresponding to the maximum or minimum of y
+
+```{r}
+x <- seq(0, pi/2, .2)
+x
+y <- sin(2*x) # as y is created based on x
+y
+x[which.max(y)] # which x correspond to the max y
+```
+
+### Check if elements in one object are present in another object
+```{r}
+x <- c(1, 2, 3, 1, NA, 4)
+y <- c(1, 2, 5, NA)
+x %in% y
+y %in% x
+! x %in% y # Invert result: find objects NOT present
+z <- matrix(1: 6, ncol=2)
+z
+x %in% z
+list(1, 2, 3) %in% list(a=c(1, 2) , b=3) # a as an element
+data.frame(a=c(1, 2), b=c(3, 4) ) %in% data.frame(a=c(2, 1), d=c(1, 2) ) # column as a element to compare
+```
+
+
+### find out what function can do 'combine objects'
+```
+??combine
+```
+
+### find objects with name having “med”
+```
+apropos("med")
+apropos("^med") # find object's name beginning with med
+```
+
+### get help file of a function
+```
+?min
+```
+
+### get example of using function min
+```
+example(min)
+```
+
+
+### Transpose a matrix (or data frame)
+```{r}
+m <- matrix(1:6, ncol=2)     # Create matrix
+m
+t(m)                         # Transpose
+mpdat <- data.frame(source=c("KU", "Spain", "Secret", "Attic"),
+                     rats=c(97, 119, 210, 358))
+mpdat
+t(mpdat)
+t(mpdat[,2])
+class(t(mpdat[, 2])) # it is not vector, but matrix
+```
+
+
+
+### Impute values using last observation carried forward
+```{r}
+
+# Start by creating a data frame with missing observation
+id <- factor(rep(c("A", "B", "C"),4))
+time <- rep(1:4, times=3)
+x <- c(1, 2, 3, 4, 5, NA, NA, NA, NA, NA, NA, 6)
+mydata <- data.frame(id, time, x) # build a dataframe
+mydata                  
+order(mydata$id) # reorder id vector and return the index of reordered vector
+mydata[(order(mydata$id)), ] # reorganise the dataframe according to new index
+order(mydata$id, mydata$time) # reorder id vector, then reorder time based on reordered id
+o <- order(mydata$id, mydata$time) 
+newdata <- mydata[o,]   # Ordered data frame
+newdata
+library(zoo)
+# Just using na.locf will carry observations forward 
+# across individuals as the following line show
+na.locf(newdata$x)      # Not working correctly
+na.locf(newdata$x, na.rm = FALSE)
+# Create function that uses na.locf on the correct variable: x
+result <- by(newdata, newdata$id, 
+             function(df) { na.locf(df$x, na.rm=FALSE)})
+result # under C, there are 2 NAs as the first value is NA
+newdata$newx <- unlist(result)  # unlist and add a new column to data frame
+newdata$newx
+newdata
+```
+
+### Convert comma as decimal mark to period sub()
+```{r}
+x <- c("1,2", "1,5", "1,8", "1.9", "2")   # 1,2 can only be string of character not numeric
+as.numeric(sub(",", ".", x))  # Substitute , with . with sub() and then convert to numeric
+f <- factor(x)                # turn strings to factors, levels are strings still
+f
+as.numeric(sub(",", ".", f))  # Substitute , with . and convert
+as.numeric(x)       # Does not work - need to substitute first
+
+```
+
+
+### Select a subset of a dataset with subset()
+```{r}
+data(ToothGrowth)
+str(ToothGrowth) # levels with numbers 
+head(ToothGrowth)
+head(subset(ToothGrowth, dose < 2))
+head(subset(ToothGrowth, dose < 2 & supp == "VC"))
+head(subset(ToothGrowth, dose < 2 & supp == "VC", 
+       select=c("len", "supp"))) # only display two columns
+```
+
+### ignore the row with missing data with complete.cases() 
+```{r}
+data(airquality)
+str(airquality)
+head(airquality)
+complete <- complete.cases(airquality) # assess all elements for NA or not
+complete # True = complete, false = missing
+ccdata <- airquality[complete,] # make complete index to ignore the row with missing element
+head(ccdata)
+complete2 <- complete.cases(airquality$Ozone, airquality$Temp) # only assess 2 columns for missing or complete
+oztemp <- airquality[complete2,] # ignore the rows with missing data from either of the two columns
+head(oztemp)
+```
+
+
+### Delete a variable or column from a data frame
+```{r}
+mydat <- data.frame(x=1:5, y=factor(c("A", "B", "A", "B", NA)))
+mydat
+mydat$y <- NULL   # Remove the y variable from mydat
+mydat
+```
+
+
+### merge dataframe by rbind
+```{r}
+df1 <- data.frame(id=1:3, x=11:13, y=factor(c("A", "B", "C")))
+df1
+df2 <- data.frame(id=6:10, y=factor(1:5), x=1:5)
+df2
+combined <- rbind(df1, df2) # as long as df1 df2 share the same column name and type
+combined
+df1 <- data.frame(id=1:3, x=11:13, y=factor(c("A", "B", "C")), 
+                  z=1:3)
+df2 <- data.frame(id=6:10, y=factor(1:5), x=1:5)
+df1$z <- NULL   # Remove the z variable from data frame df1
+rbind(df1,df2)  # Now we can join the data frames
+df1 <- data.frame(id=1:3, x=11:13, y=factor(c("A", "B", "C")), 
+                  z=1:3)
+df2 <- data.frame(id=6:10, y=factor(1:5), x=1:5)
+df2$z <- NA     # Add a vector z of NAs to data frame df2
+rbind(df1,df2)  # Now we can join the data frames
+```
+
+### Merge() datasets based on shared columns
+```{r}
+dfx <- data.frame(id=factor(1:5), var1=11:15)
+dfy <- data.frame(id=factor(6:1), var2=15:10)
+merge(dfx, dfy, by="id") # merge dfx dfy by sharing the same id values from both side
+merge(dfx, dfy, by="id", all.y=TRUE) # merge them by id column from the second df and ignore id of dfx
+```
+
+
+### Stack the columns of a data frame together
+
+```{r}
+df <- data.frame(x=c(1, 2, 3, 4, 5), y=c(3, NA, 6, 7, 8))
+df
+newdf <- stack(df)
+newdf
+str(newdf)
+t.test(df$x, df$y, var.equal=TRUE)    # T-test for two samples
+summary(lm(values ~ ind, data=newdf))    # One-way anova
+```
+
+
+
+### Reshape a data frame from wide to long format or vice versa  
+
+```{r}
+
+
+# if not working please check your file directory
+
+indata <- read.table("widedata.txt", header=TRUE)
+
+indata
+
+long <- reshape(indata,
+                varying=list(c("y1", "y2", "y3", "y4"), c("t1", "t2", "t3", "t4")),
+                v.names=c("response", "day"),
+                direction="long")
+long
+
+reshape(long, idvar="person", timevar="time",
+        v.names=c("day", "response"), 
+        direction="wide")
+
+# Reshape but specify names of variables in wide format
+reshape(long, idvar="person", timevar="time",
+        v.names=c("day", "response"), 
+        varying=list(c("y1", "y2", "y3", "y4"), c("t1", "t2", "t3", "t4")),
+        direction="wide")
+
+```
+
+
+
+### Create a table of counts
+```{r}
+
+x <- rbinom(20, size=4, p=.5)
+x
+table(x)
+sex <- sample(c("Male", "Female"), 20, replace=TRUE) # replace = put the ball back
+sex
+cbind(x, sex)
+data.frame(x, sex)
+table(sex, x) # look at sex elements, use x as criteria
+treatment <- rep(c("Placebo", "Active"), 10)
+treatment
+data.frame(x, sex, treatment) 
+table(sex, x, treatment) # same above, only treatment provides list criteria
+data(Titanic)
+str(Titanic) # Titanic is a list of table
+Titanic
+ftable(Titanic) # make list-table into one table
+
+```
+
+
+### Convert a table of counts to a data frame
+```{r}
+# Only look at males to keep output short
+str(HairEyeColor)
+maletable <- as.table(HairEyeColor[,,1])
+maletable
+freq <- as.data.frame(maletable) # turn table into dataframe 
+freq # watch how columns of a table melt into a column of dataframe
+library(epitools)
+fulldata <- expand.table(HairEyeColor)
+str(fulldata) # table becomes dataframe of factors
+head(fulldata)
+
+```
+
+
+### Convert a data frame to a vector
+
+```{r}
+df <- data.frame(a=rep(1,5), b=rep(2,5), c=rep(3,5)) # make a dataframe
+df
+vector <- as.vector(as.matrix(df))  # turn dataframe to vector
+vector
+df <- data.frame(a=rep(1,5), 
+                 b=factor(c("A", "A", "A", "B", "B")))
+df        # Show data frame with both numeric and factor
+as.vector(as.matrix(df))   # Result is vector of strings
+```
+
+
+### Convert a factor to numeric
+```{r}
+f <- factor(c(1:4, "A", 8, NA, "B"))
+f
+as.numeric(levels(f)) # any numeric-string will be turned into NA
+vect <- as.numeric(levels(f))[f] # A, NA, B inside [f] makes NA in vect
+vect
+as.numeric(f) # elements in f are not numeric but strings and as.numeric makes them new numbers
+```
+
+
+### Add a new level to an existing factor
+```{r}
+f <- factor(c(1, 2, 3, 2, 3, 1, 3, 1, 2, 1))
+f
+f[c(1,2)] <- "new level"   # not directly inject new level
+f
+# Define the new factor level first
+f <- factor(f, levels=c(levels(f), "new level"))
+f[c(1,2)] <- "new level"   # Can now assign new levels
+f
+```
+
+
+### Combine the levels of a factor
+```{r}
+f <- factor(c(1, 1, 2, 3, 2, 1, "A", 3, 3, 3, "A"))
+f
+# Define the new factor levels. We wish to combine
+# levels 1 and 3 so assign appropriate labels for 
+# each of the original levels of the factor f
+levels(f) # returns vector of characters
+new.levels <- c("13", levels(f)) # build a new vector of characters
+new.levels
+levels(f) <- new.levels # assign the vector of characters as new levels
+f
+```
+
+
+### Remove unused levels of a factor
+```{r}
+f <- factor(c(1, 2, 3, 2, 3, 2, 1), levels=c(0, 1, 2, 3))
+f
+ff <- droplevels(f)   # Drop unused levels from f
+ff
+# Create data frame with two identical factors
+df <- data.frame(f1=f, f2=f)
+df
+# Drop levels from all factors in df except variable 2
+newdf <- droplevels(df, except=2)
+newdf
+str(newdf)
+newdf$f1
+newdf$f2
+```
+
+
+
+### Cut a numeric vector into a factor
+```{r}
+x <- (1:15)**2
+x
+samelen <- cut(x, 3)  # Cut the range of x into 3 interval of same length
+table(samelen)
+# Cut the range into 3 intervals of roughly the same size
+quantile(x, probs=seq(0, 1, length=4))
+samesize <- cut(x, quantile(x, probs=seq(0, 1, length=4)), 
+    include.lowest=TRUE)
+table(samesize)
+
+```
+
+
+### reorder vector and dataframe
+```{r}
+x <- c(2, 4, 1, 5, 3, 4)
+x
+sort(x)
+sort(x, decreasing=TRUE)
+y <- c("b", "a", "A", "b", "b", "a")
+y
+sort(y)
+order(x) # return the index for reorder x and other columns if it is a dataframe
+df <- data.frame(x,y)
+df
+df[order(df$y),] # reorder df by reorder the index of df$y
+df[order(df$y, df$x),]
+```
+
+
+### Transform a variable
+```{r}
+data(airquality)
+names(airquality)
+head(airquality)
+celsius <- (airquality$Temp-32)/1.8 # create a new variable with data
+airquality$Celsius <- (airquality$Temp-32)/1.8 # Store the variable inside the data frame
+head(airquality)
+
+newdata <- transform(airquality, logOzone = log(Ozone)) # add new variable through transform()
+head(newdata)
+
+```
+
+### Apply a function multiple times to parts of a data frame or array
+
+```{r}
+m <- matrix(c(NA, 2, 3, 4, 5, 6), ncol=2)
+m
+apply(m, 1, sum)           # Compute the sum for each row
+data(airquality)
+sapply(airquality, mean)   # Compute the mean of each variable
+sapply(airquality, mean, na.rm=TRUE, trim=.1)
+by(airquality, airquality$Month, mean, na.rm = TRUE) # not know why not display result
+```
+
+
+
+### Graphics
+
+```{r}
+x <- 1:5                     # 5 x-axis points
+y <- x^2                     # 5 y-axis points
+plot(x, y, pch=3:7)          # 5 points = 5 symbols
+plot(x, y, pch=c("a", "b"))  # 5 points = 2 symbols cycling to match 
+plot(x, y, col="red")        # Each symbol is red
+plot(x, y, pch=c("a", "b"),  # Symbols are a b cycling to match 5 points
+     col=c("red", "blue", "green")) # 3 cols cycling for plotting color = border color
+# Plot circles with a thick red border and blue fill color
+plot(x, y, pch=21, lwd=3, col="red", bg="blue") # bg = background color = fill color
+plot(x, y, cex=seq(1,2,.25)) # cex = size, cex = a vector of 5 different sizes, increasing
+plot(x, y, type="l", lty=2)  # type = 'l' to change circle to line,  line type = pattern 2
+plot(x, y, type="l", lwd=3)  # default line width = 1, here line width 3
+par(lwd=3, pch=4, cex.main = 3)  # part()go before plot(), set up Line width, symbol, cex
+plot(x, y, lwd=1, main = "my chart") # write main = title string here
+par(cex.lab=2, cex.main=3)   # in par() set label size with cex.lab
+plot(x, y, xlim=c(0, 10))    # xlim = set x axis from 0 to 10
+plot(x, y, log="y")          # do Logarithmic to y axis data
+plot(x, y, las=1)            # las can be 0-3, but no idea what difference to make
+
+text(1, 2, "Where's Wally?")  # Add text to existing plot, check ?text
+mtext("I'm out here", side=4) # and text to the right margin, ?mtext
+```
+
+### math expressions in R text
+```{r}
+demo(plotmath)
+```
+
+
+### Including Greek letters and equations in graphs
+
+```{r}
+x <- seq(0, 5, .1)
+plot(x, sin(x), type="l", ylim=c(-1, 2.5),
+     xlab=expression(paste("Concentration ", mu[i])))
+lines(x, sqrt(x), lty=2)
+title(expression(paste("This looks like ", Gamma, " to me")))
+
+text(4, 1.5, expression(hat(x) == sqrt(x)))
+     
+```
+
+> only the following code has something wrong  
+
+```
+text(1.6, -.5, expression(paste(plain(sin)(x) == 
+                                sum(frac((-1)^n, paste((2*n+1), plain("!")))*x^(2*n+1), 
+                                      n==0, infinity)))
+```
+
+
+### Set colors in R graphics
+
+```{r}
+colors()  # show all the colors in R system
+plot(1:10, col="cyan")         # 1:10 apply to both x and y; Plot using cyan color
+plot(1:10, col="#cc0076")      # Plot using purplish color
+
+rgb(10, 20, 30, maxColorValue=255) # returns a code for color like "#0A141E"
+plot(1:10, col=rgb(10, 20, 30, maxColorValue=255))      # Plot using purplish color
+
+plot(1:10, col="#0A141E")      # Plot using purplish color
+
+rgb(10, 20, 30, alpha=50, maxColorValue=255) # alpha set the level of transparency compare to the max number
+
+rgb(10, 20, 30, maxColorValue=100)
+rgb(10, 20, 30, alpha=50, maxColorValue=100)
+```
+
+
+### Set color palettes in R graphics
+
+```{r}
+palette()             # Show the current palette in R 
+palette(c("red", "#1A334D", "black", rgb(.1, .8, 0))) # set the palette with specific color you want
+palette() # display the specific color you set
+palette("default")    # Use the default palette
+library(RColorBrewer) # Full color palettes can be generated directly without having to specify each color separately
+brewer.pal.info
+str(brewer.pal.info)
+head(brewer.pal.info, n=10) # show only ten of those color palette names above
+brewer.pal(n=5, name="Spectral")       # choose 5 colors from Spectral palette
+brewer.pal(n=10, name="Accent")        # 10 colors from Accent
+# Set colors locally for just one function call
+plot(1:8, col=brewer.pal(n=8, name="Reds"), pch=16, cex=4) # give each point a color of the eight
+palette(brewer.pal(n=8, name="Greens")) # Set global palette for the plotting following
+plot(1:8, col=1:8, pch=16, cex=4)       # Plot using colors
+
+```
+
+
+### High-level plots
+```{r}
+data(airquality)
+plot(airquality$Temp, airquality$Ozone,
+     xlab="Temperature", ylab="Ozone",
+     main="Airquality relationship?")
+pairs(airquality)
+# Create function to make histogram with density superimposed
+panel.hist <- function(x, ...)  {
+  # Set user coordinates of plotting region
+  usr <- par("usr"); on.exit(par(usr)) # I don't know how to use par() and its arguments, nor on.exit()
+  par(usr = c(usr[1:2], 0, 1.5))
+  par(new=TRUE)                    # Do not start new plot
+  hist(x, prob=TRUE, axes=FALSE, xlab="", ylab="", 
+       main="", col="lightgray")
+  lines(density(x, na.rm=TRUE))    # Add density curve
+}
+# Create function to compute and print R^2
+panel.r2 <- function(x, y, digits=2, cex.cor, ...) {
+  # Set user coordinates of plotting region
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r <- cor(x, y, use="complete.obs")**2  # Compute R^2
+  txt <- format(c(r, 0.123456789), digits=digits)[1]
+  if(missing(cex.cor)) cex.cor <- 1/strwidth(txt)
+  text(0.5, 0.5, txt, cex = cex.cor * r)
+}
+pairs(~ Ozone + Temp + Wind + Solar.R, data=airquality, 
+      lower.panel=panel.smooth, upper.panel=panel.r2, 
+      diag.panel=panel.hist) # how to use pairs() and its arguments
+
+```
+
+
+### Create a histogram plot
+
+```{r}
+data(LakeHuron)
+hist(LakeHuron)
+# Use the breaks option to specify the number of bins
+# regardless of the size of the dataset
+# Remove title and make bars gray
+hist(LakeHuron, xlab="Level of Lake Huron (in feet)",
+     freq=FALSE, breaks=c(574, 577, 578, 581, 585), 
+     col="gray", main=NULL) 
+# ues should include the entire range of observations).If the bins are of unequal widths, then hist by default produces a relative frequency histogram. Setting the freq=FALSE option forces the hist function to produce relative frequency histograms even when the bin widths are identical
+lines(density(LakeHuron)) # what parameter to set for the height of y-axis
+```
+
+
+### Create a boxplot
+
+```{r}
+data(ToothGrowth)
+str(ToothGrowth)
+teeth <- subset(ToothGrowth, supp=="VC") # Use only some data
+teeth
+boxplot(len ~ factor(dose), data=teeth)
+# Horiz. boxplot with whiskers from minimum to maximum value
+attach(ToothGrowth)                      # Use all data
+boxplot(len, horizontal=TRUE, range=0) # The standard boxplot where the whiskers extend to the minimum and maximum value can be obtained by setting the range option to zero.
+```
+
+### Create a bar plot
+
+```{r}
+m <- matrix(c(23, 20, 12, 5, 6, 9), ncol=3)  # Input data
+relfrq <- prop.table(m, margin=1)            # The prop.table function computes the relative frequencies of a matrix given as the first argument. The second argument to prop.table determines if the proportions are relative to the row sums (margin=1) or the column sums (margin=2).
+relfrq
+t(relfrq)
+# Make juxtaposed barplot
+barplot(relfrq,  beside=TRUE, 
+        legend.text=c("Hadsten", "Hammel"),
+        names=c("<0.01", "0.01-0.10", ">0.10")) # beside  a logical value. If FALSE, the columns of height are portrayed as stacked bars, and if TRUE the columns are portrayed as juxtaposed bars
+# Stacked relative barplot with labels added
+barplot(relfrq,  beside=FALSE, 
+        legend.text=c("Hadsten", "Hammel"),
+        names=c("<0.01", "0.01-0.10", ">0.10"))
+barplot(t(relfrq), names=c("Hadsten", "Hammel"), horiz=TRUE) # default is beside = FALSE
+```
+
+### Create a bar plot with error bars
+
+```{r}
+library(gplots)
+data(airquality)
+# Compute means and standard deviations for each month
+mean.values <- by(airquality$Temp, airquality$Month, mean) # by() apply functions to specific vector
+mean.values
+sd.values <- by(airquality$Temp, airquality$Month, sd)
+sd
+barplot2(mean.values,
+         xlab="Month", ylab="Temperature (F)",
+         plot.ci=TRUE,
+         ci.u = mean.values+1.96*sd.values,
+         ci.l = mean.values-1.96*sd.values)
+```  
+
+> The barplot2 function from the gplots package can be used to create a bar plot with error bars. barplot2 is an enhancement of the standard barplot function that can plot error bars for each bar.
+The function takes the same arguments as barplot but in addition you can specify the lower and upper limits for the individual error bars with the ci.l and ci.u options, respectively.
+
+
+```{r}
+airquality$Month <- factor(airquality$Month)
+model <- lm(Temp ~ Month - 1, data=airquality) # look detail in statistical R
+mean.values <- coef(summary(model))[,1]
+mean.values
+sem <- coef(summary(model))[,2]
+scale <- qt(0.975, df=summary(model)$df[2])
+barplot2(mean.values,
+         xlab="Month", ylab="Temperature (F)",
+         plot.ci=TRUE,
+         ci.u = mean.values+scale*sem,
+         ci.l = mean.values)
+```
+
+
+### Create a plot with estimates and confidence intervals
+
+```{r}
+library(gplots)
+data(OrchardSprays)
+fit <- lm(decrease ~ treatment - 1, data=OrchardSprays)
+summary
+```
+
+> Sometimes it is desirable to present the results from an analysis graphically, for example by illustrating parameter estimates and their corresponding confidence intervals. These graphs can be created using standard plotting functions like plot and arrows, but the plotCI function from gplots package combines the necessary steps into a single function.
+> plotCI requires one or two arguments, x and y which define the coordinates for the center of the error bars. y defaults to the vector 1:n if it is omitted. The uiw and liw options set the widths of the upper/right and lower/left error bar, respectively, and if liw is not specified it defaults to the same value as for uiw
+
+```{r}
+plotCI(coef(summary(fit))[,1], 
+       uiw=qt(.975, df=56)*coef(summary(fit))[,2],
+       ylab="Estimates and 95% confidence intervals", xaxt="n")
+axis(1, 1:length(rownames(coef(summary(fit)))), 
+     rownames(coef(summary(fit)))) # ?axis for arguments usage
+```
+
+> uiw  width of the upper or right error bar. Set to NULL or NA to omit upper bars.
+
+> liw   width of the lower or left error bar. Defaults to same value as uiw. Set to NULL or NA to omit lower bars.
+
+
+### Create a pyramid plot
+
+```{r}
+
+library(plotrix)
+men <- c(334700, 357834, 328545, 367201, 411689, 
+         359363, 336841, 178422, 72296, 9552, 139, 0)
+women <- c(318662, 340357, 320462, 365180, 401521, 
+           357405, 345884, 208057, 117843, 27914, 761, 0)
+groups <- paste(seq(0, 110, 10), "-", seq(9, 119, 10), sep="")
+groups                             # Show group labels
+men <- 100*men/sum(men)            # Normalize men
+women <- 100*women/sum(women)      # and women
+men
+women
+pyramid.plot(men, women, labels=groups,
+            lxcol="lightgray", rxcol="lightgray")
+library(MASS)
+data(survey)               
+# Tabulate exercise and smoking status by gender
+result <- by(survey, survey$Sex, 
+             function(x) {table(x$Smoke, x$Exer)})
+result
+pyramid.plot(lx=result$Male, rx=result$Female,
+             labels=row.names(result$Male),
+             gap=10, unit="Number of students",
+             top.labels=c("Male","Smoking Frequency","Female"),
+             lxcol=c("darkgray", "white", "lightgray"),
+             rxcol=c("darkgray", "white", "lightgray"))
+```
+
+
+Plot multiple series
+Make a 2D surface plot
+Make a 3D surface plot
+Plot a 3D scatter plot
+Create a heat map plot
+Plot a correlation matrix
+Make a quantile-quantile plot
+Graphical model validation for linear models
+More advanced graphics
+Create a broken axis to indicate discontinuity
+Create a plot with two y-axes
+Rotate axis labels
+Multiple plots
+Add a legend to a plot
+Add a table to a plot
+Label points in a scatter plot
+Identify points in a scatter plot
+Visualize points, shapes, and surfaces in 3D and interact with them in real-time
+Working with graphics
+Exporting graphics
+Produce graphics output in LaTeX-ready format
+Embed fonts in postscript or pdf graphics
+R
+Getting information
+Getting help
+Finding R source code for a function
+R packages
+Installing R packages
+Update installed R packages
+List the installed packages
+List the content of a package
+List or view vignettes
+Install a package from BioConductor
+Permanently change the default directory where R installs packages
+Automatically load a package when R starts
+The R workspace
+Managing the workspace
+Changing the current working directory
+Saving and loading workspaces
+Saving and loading histories
+Interact with the file system
+Locate and choose files interactively
+Interact with the operating system

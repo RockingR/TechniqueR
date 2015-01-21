@@ -1,0 +1,251 @@
+---
+title: "R dummy debug"
+author: "Kenny"
+date: "Tuesday, January 20, 2015"
+output: html_document
+---
+
+
+### Reading error messages
+
+```
+
+# "a" + 1
+# Error in "a" + 1 : non-numeric argument to binary operator
+ 
+# data.frame(1:10,10:1,)
+# Error in data.frame(1:10, 10:1, ) : argument is missing, with no default
+ 
+```
+
+### warning is a problem but not stop execution
+
+```{r}
+
+x <- 1:10
+y <- if (x < 5 ) 0 else 1
+ 
+x <- 4
+sqrt(x - 5)
+ 
+plot(1:10, 10:1, color='green')  # problem for every method function
+ 
+
+```
+ 
+### Going Bug Hunting
+ 
+> make a function on Calculating the logit
+
+```{r}
+logit <- function(x){
+  x <- ifelse(x < 0 | x > 1, "NA", x) # if x <- NA occurs, log(x/(1-x)) will error
+  log(x / (1 - x) )
+}
+
+myLog <- c(0.5, 0.7)
+logit(myLog)
+```
+
+ 
+> transforms percentage to number and calls logit
+
+```{r}
+gsub("%", "", myLog) # get rid of % in the format of character
+as.numeric(gsub("%", "", myLog))  # return to numeric format
+
+logitpercent <- function(x){
+  x <- gsub("%", "", x)
+#  x
+  logit(as.numeric(x))
+}
+
+logitpercent(myLog)
+```
+ 
+ 
+ 
+### Knowing where an error comes from
+
+```
+logitpercent('50%')
+
+# Error in 1 - x : non-numeric argument to binary operator
+```
+
+> How to know where error is 
+
+```
+
+traceback()
+
+2: logit(as.numeric(x)) at #4
+1: logitpercent("50%")
+
+```
+
+ 
+## Looking inside a function
+ 
+ 
+### Telling R which function to debug
+
+```
+
+debug(logit)
+logitpercent('50%')
+
+# debugging in: logit(as.numeric(x))  ## where the debug begins
+# debug at #1: {
+#    x <- ifelse(x < 0 | x > 1, "NA", x)
+#    log(x/(1 - x))
+# }
+# Browse[2]>  ## input n and enter to run code line by line
+
+# Browse[2]> str(x)  ## working inside debug format
+#  num 50   # this is where the error is: it should be 0.5 but it is 50
+ 
+```
+> **How it looks like in Rstudio**: ![](Rdebug.png)  
+
+### Stepping through the function
+ 
+### Start browsing from within the function
+> **use browser() to replace debug() here**
+
+```
+
+
+logit <- function(x){
+  x <- ifelse(x < 0 | x > 1, "NA", x)
+  browser()
+  log(x / (1 - x) )
+}
+ 
+logit(50)
+ 
+```
+> **How it looks like in Rstudio**: ![](Rdebug1.png)  
+
+### Generating Your Own Messages
+ 
+> Creating errors
+
+```
+
+logit <- function(x){
+  if( any(x < 0 | x > 1) ) stop('x not between 0 and 1') 
+  
+  # error will happen at stop()
+  # With the if() statement, you test whether any value in x lies between 0 and 1. 
+  # Using the any() function around the condition allows your code to work with complete vectors at once, instead of with single values.
+  
+  log(x / (1 - x) )
+}
+ 
+
+logitpercent(c('50%','150%'))
+```
+> **How it looks like in Rstudio**: ![](Rdebug2.png)  
+ 
+
+
+### Creating warnings
+
+```
+
+logit <- function(x){
+  x <- ifelse(x < 0 | x > 1, NA, x )
+  if( any(is.na(x)) ) warning('x not between 0 and 1') 
+  log(x / (1 - x) )
+}
+ 
+
+logitpercent(c('50%','150%')) 
+
+[1] NA NA
+Warning message:
+In logit(as.numeric(x)) : x not between 0 and 1
+
+```
+ 
+### Recognizing the Mistakes You're Sure to Make
+ 
+> Starting with the wrong data
+ 
+> Having your data in the wrong format
+ 
+### Dropping dimensions when you don’t expect it
+ 
+ 
+> show what can be wrong
+
+```{r}
+sleep
+sapply(sleep,is.numeric)
+sleep[, sapply(sleep, is.numeric)]
+
+```
+
+```
+rowsum.df <- function(x){
+  id <- sapply(x,is.numeric)
+  rowSums(x[, id])
+}
+ 
+rowsum.df(sleep)
+ 
+```
+
+> **How it looks like in Rstudio**: ![](Rdebug3.png)  
+
+### Messing up with lists
+```{r}
+
+
+strsplit('this is a sentence',' ')[2] # referring to a vector 
+ 
+strsplit('this is a sentence',' ')  # it produces a list
+ 
+strsplit('this is a sentence',' ')[[1]][2] # referring to second value of the first and only list
+ 
+customer <- c('Johan Delong','Marie Petit')
+namesplit <- strsplit(customer,' ')
+namesplit 
+ 
+paste(namesplit[2],collapse='.')
+ 
+paste(namesplit[[2]],collapse='.')
+ 
+```
+
+### Mixing up factors and numeric vectors
+```{r}
+
+mtcars$cyl
+cyl.factor <- as.factor(mtcars$cyl)
+cyl.factor
+as.numeric(cyl.factor)  # this is where thing goes wrong
+median(as.numeric(cyl.factor))
+
+levels(cyl.factor)
+as.numeric(levels(cyl.factor))
+as.numeric(levels(cyl.factor))[cyl.factor]
+
+mtcars$cyl
+cyl.factor <- as.factor(mtcars$cyl)
+cyl.factor
+
+levels(cyl.factor)
+as.numeric(levels(cyl.factor))
+as.numeric(levels(cyl.factor))[cyl.factor]
+
+new.cyl <- as.factor(c(6, 6, 4, 6, 8, 6, 8, 4, 4))
+new.cyl
+levels(new.cyl)
+as.numeric(levels(new.cyl))
+as.numeric(levels(new.cyl))[new.cyl]
+
+as.numeric(levels(new.cyl))[c(6, 6, 4, 6, 8, 6, 8, 4, 4)]
+
+```

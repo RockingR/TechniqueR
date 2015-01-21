@@ -1,0 +1,465 @@
+---
+title: "Basic concepts"
+author: "Kenny"
+date: "Friday, January 09, 2015"
+output: html_document
+---
+
+### What is vector
+
+> all vector shall have the elements with same type
+
+> sequence vectors
+```{r}
+5:9
+seq(5, 9)
+seq(5, 9, 0.5)
+```
+
+### retrieve values from a vector
+
+```{r}
+sentence <- c('walk', 'the', 'plank')
+sentence[3]
+
+sentence[1]  # Many languages start array indices at 0, but R's vector indices start at 1
+sentence[3] <- "dog" # assign new values within an existing vector
+
+sentence[4] <- 'to'
+
+sentence[c(1, 3)] # use a vector within the square brackets to access multiple values
+
+sentence[2:4]  # Get the second through fourth words:
+
+sentence[5:7] <- c('the', 'poop', 'deck')
+
+sentence[6]
+```
+
+### assign names to vector's elements
+
+```{r}
+ranks <- 1:3
+names(ranks) <- c("first", "second", "third") # assign names to elements of a vector
+```
+
+### retrieve elements from vector by names
+
+```{r}
+ranks # still vector only with names
+ranks["first"] # still a value element of a vector only with a name
+ranks["third"] <- 4 # assign a different value to the element with name "third"
+```
+
+### barplot to draw vector
+
+```{r}
+barplot(1:100) # draw bars from vector
+vesselsSunk <- c(4, 5, 1)
+barplot(vesselsSunk)
+```
+
+> names of vector elements will show on graphs
+
+```{r}
+names(vesselsSunk) <- c("England", "France", "Norway")
+barplot(vesselsSunk)
+
+```
+
+### Vector math
+
+```{r}
+a <- c(1, 2, 3)
+a + 1
+a == c(1, 99, 3) # each element compare to each element of different vector
+sin(a) # function apply to each element
+
+```
+
+### How to plot two vectors 
+```{r}
+x <- seq(1, 20, 0.1)
+y <- sin(x)
+plot(x, y)
+```
+
+### How to deal with NA
+```{r}
+a <- c(1, 3, NA, 7, 9)
+sum(a)
+sum(a, na.rm = TRUE)
+```
+
+### Difference between matrix and array or vector
+
+> A matrix is just a fancy term for a 2-dimensional array
+
+### Build a matrix
+
+```{r}
+matrix(0, 3, 4) # 3 high, 4 wide, with 0 as value
+
+a <- 1:12
+print(a) # prove a is only a vector
+matrix(a, 3, 4) # a vector is turned into a matrix
+
+plank <- 1:8 # a vector or one dimensional array
+dim(plank) <- c(2, 4) # give this vector(one dim of array) a two dimension attribute
+print(plank) # automatically, the vector is turned into 2-dimension array = matrix
+
+matrix(8, 5, 5) # make matrix with matrix() function, it can be 8 or a vector
+plank <- matrix(1:8, 2, 4, byrow = FALSE)
+print(plank)
+```
+
+### retrieve elements from Matrix
+```{r}
+plank[2, 3]  # as matrix is 2 dim, so two number to locate value
+plank[1, 4]
+plank[1, 4] <- 0
+plank[2,]
+plank[, 4]
+plank[, 2:4]
+```
+
+### matrix plotting
+
+> Text output is only useful when matrices are small. When working with more complex data, we need matrix plotting  
+
+> Let's draw an elevation map of a sandy beach, 1 meter above sea level
+
+```{r}
+elevation <- matrix(1, 10, 10) # we think of a 3D sandy beach 
+elevation[4, 6] <- 0 # we dig down 1 meter at a specific place on the beach
+contour(elevation) # draw a contour map
+persp(elevation) # draw a 3D map, but persp automatically expands the view so that your highest value (the beach surface) is at the very top
+persp(elevation, expand=0.2) # more reasonable graph
+
+```
+> a 3D map of a dormant New Zealand volcano
+
+```{r}
+contour(volcano)
+persp(volcano, expand=0.2)
+image(volcano)
+```
+
+
+### summary statistics on mean
+
+```{r}
+limbs <- c(4, 3, 4, 3, 2, 4, 4, 4) # collect data about crew members
+names(limbs) <- c('One-Eye', 'Peg-Leg', 'Smitty', 'Hook', 'Scooter', 'Dan', 'Mikey', 'Blackbeard')
+mean(limbs)
+barplot(limbs)
+abline(h = mean(limbs)) # draw a horizontal line display mean
+```
+
+### graph ablines differ in sd
+
+```{r}
+pounds <- c(45000, 50000, 35000, 40000, 35000, 45000, 10000, 15000)
+barplot(pounds)
+meanValue <- mean(pounds)
+abline(h = meanValue) # line on mean value
+deviation <- sd(pounds) # value of 1 sd
+abline(h = meanValue + deviation) # line on mean + 1sd
+abline(h = meanValue - deviation)
+```
+
+
+### Create factors
+> Often your data needs to be grouped by category = factors
+
+```{r}
+chests <- c('gold', 'silver', 'gems', 'gold', 'gems')
+types <- factor(chests) # character vector turned into factor, no more quotation marks
+print(chests) # chests is still the same vector
+print(types) # types is the vector chests with factor or levels attribute
+
+as.integer(types) # values of types are not strings but integer references to one of the factor's levels
+levels(types) # but levels themselves are strings or characters, so with quotations
+```
+
+### graph factors with pch  
+> graph the chests by weight and value  
+
+```{r}
+weights <- c(300, 200, 100, 250, 150)
+prices <- c(9000, 5000, 12000, 7500, 18000)
+plot(weights, prices) # both weights and prices correspond to chests or types
+
+plot(weights, prices, pch=as.integer(types)) # converting the factor to integers, and passing it to the pch argument
+
+legend("topright", c("gems", "gold", "silver"), pch=1:3) # make legends to correspond to pch
+
+legend("topright", levels(types), pch=1:length(levels(types))) # make it automatic given future changes
+```
+
+
+### build dataframe
+> 1. same length of all columns
+> 2. same type of data within a column
+> 3. different type of data among different columns is ok
+
+```{r}
+treasure <- data.frame(weights, prices, types)
+print(treasure)
+```
+
+### retrieve column from a dataframe
+
+```{r}
+treasure[[2]] # retrieve the second column
+treasure[["weights"]] # retrieve the column with name weights
+treasure$prices # retrieve the column with name prices
+treasure[["types"]] # get column named types (a vector of factor)
+
+```
+
+### read table and csv and make csv directly from notepad
+```{r}
+read.csv("targets.csv")
+read.table("infantry.txt", sep="\t")
+read.table("infantry.txt", sep="\t", header=TRUE)
+```
+
+### merge dataframes 
+
+```{r}
+targets <- read.csv("targets.csv")
+infantry <- read.table("infantry.txt", sep="\t", header=TRUE)
+merge(x = targets, y = infantry) # same column melt into one, and different ones combine
+```
+
+### merge dataframe and real data
+
+```
+Rank    Country        GDP
+1       Liechtenstein  141100
+2       Qatar          104300
+3       Luxembourg     81100
+4       Bermuda        69900
+
+gdp <- read.table("gdp.txt", sep="  ", header=TRUE)
+
+Country,Piracy
+Australia,23
+Bangladesh,90
+Brunei,67
+China,77
+
+piracy <- read.csv("piracy.csv")
+
+countries <- merge(x = gdp, y = piracy)
+
+plot(count�ries$GDP, count�ries$Pirac�y) 
+
+cor.test(countries$GDP, countries$Piracy) # test for correlation between two vectors
+
+line <- lm(countries$Piracy ~ countries$GDP)
+
+abline(line)
+```
+
+### use ggplot2
+```{r}
+weights <- c(300, 200, 100, 250, 150)
+prices <- c(9000, 5000, 12000, 7500, 18000)
+chests <- c('gold', 'silver', 'gems', 'gold', 'gems')
+types <- factor(chests)
+require(ggplot2)
+qplot(weights, prices, color = types) # color only accept factor
+```
+
+
+
+### Why full control of graphics in R can be frustrating
+
+> **There are many graphics systems in R, and they don’t necessarily play well with each other**
+
+
+
+
+
+**Base graphics**  
+
+* is the oldest and most basic. Base graphics produce static pictures        
+* its par function is used to set up the graphics parameters that control the layout and look of the graphics  
+
+**grid**  
+
+* is a much more flexible system of graphics.   
+* there are graph objects (see More R key objects for the idea of “object”).  
+
+**lattice**  
+
+* contains a set of graphics techniques that are very useful for data analysis.
+
+**ggplot2**  
+
+* is a plotting system for R, trying to take the good parts of base and lattice graphics  
+* It takes care of many fiddly details that make plotting a hassle (like drawing legends)  
+* provides a powerful model of graphics that makes it easy to produce complex multi-layered graphics.  
+
+**Useful links**
+
+* Cran Task View on [graphics](http://cran.r-project.org/web/views/Graphics.html)
+
+### how many different objects in R?
+
+**What is an object?**
+
+* assign a name, if you can, it is; if you cannot assign a name to it, it is not
+* something that we can hold, turn upside down, and look at
+
+**What is Attribute?**
+
+* Attributes are spice.
+* objects have a main part, but can have one or more attributes
+* same bowl of rice and beans, with different spice, they are different dishes.
+* name is attribute: 
+    * The elements of an atomic vector can each have a name. 
+    * The components of a list can each have a name.
+* class is a very important attribute.
+
+**What are inherent characteristics of objects?**
+
+* Objects have a “length”. 
+    * The length of an atomic vector is the number of elements it has. 
+    * The length of a list is the number of components that it has. 
+    * The length of NULL is zero.
+
+* Objects have a “mode”. 
+    * This says what kind of object they are. 
+    * mode() function tell you the mode of an object. 
+    * typeof() function tell slightly more specific about an object.
+
+**What are Atomic Types?**
+
+* There are three atomic types  
+    * Numeric objects hold numbers.
+    * Logical objects have values that are TRUE, FALSE and NA.
+    * Character objects have a string as each element.
+
+**What are Matrices and Data Frames?**
+
+* similarities 
+    * matrices and data frames are rectangular objects with rows and columns.
+    * Both are linear structures pretending to be rectangular. 
+    * Both have names for the rows and the columns.
+* differences
+    * A matrix is a vector that has a dim attribute. 
+    * The dim is a vector of two integers saying how many rows and columns there are. 
+    * A data frame has a class attribute that is "data.frame". 
+    * It is really a list with as many components as there are columns. 
+    * Each component has to have the same number of elements (the number of rows).
+    * check with function is.data.frame(x)
+
+**What are Factors?**
+
+* Factors have two key attributes: 
+  
+    * a class attribute and a levels attribute. 
+    * The levels is a character vector that gives the possible categories for the object. 
+    * ???The basic part of the object is a vector of integers that are the location of the category in the levels vector.
+
+
+**Missing values**
+
+* All of the atomic modes have a missing value. 
+    * This is printed as NA.
+    * test for missing values with the is.na function. For example: is.na(x)
+
+
+
+**See inside structure of object**
+
+```{r}
+examp <- list(A=1:10, B=letters, C=list(NULL, TRUE))
+str(examp)
+
+```
+
+**Function are objects too**
+
+
+### What 2.3e6 and 2.3e-4 mean?
+
+* 2.3e6 = 2.3 with decimal point moving right 6
+* 2.3e6 = 2.3 with decimal point moving left 6
+
+### Watch for integer and floating point
+
+* they differ when floating point is result of rounding
+```{r}
+seq(0, 1, by = .1)
+seq(0, 1, by = .1)[4] # the result is rounding outcome, not the real outcome
+seq(0, 1, by = .1)[4] == .3 # therefore it is false not true here
+seq(0, 1, by = .1)[4] - .3 
+print(seq(0, 1, by=.1)[4], digits=20)
+
+```
+
+### How to replace . with ,
+
+**replace . with , by format(, decimal.mark=)**
+```{r}
+format(seq(0, 1, by=.5), decimal.mark=",") # change to , by format(x, decimal.mark = ",")
+
+```
+
+**replace . with , by option at beginning**
+```{r}
+options(OutDec=",")
+seq(0, 1, by=.5)
+```
+
+**use sub() to replace . with ,**
+```{r}
+nums <- format(seq(0, 1, by=.5), decimal.mark=",") # , makes number into strings
+nums
+sub(",", ".", nums) # sub() work with strings?
+as.numeric(sub(",", ".", nums)) # turn string into numbers again
+```
+
+**replace multiple , with nothing**
+```{r}
+as.numeric(gsub(",", "", "2,300,000"))
+```
+
+### How R understand infinity and not-a-number
+
+**What R's limit on infinit**
+
+```{r}
+1e308
+1e308 * 10
+```
+
+**What R consider to be NaN**
+
+```{r}
+0/0
+Inf - Inf
+```
+
+### Understand integer and floating point with examples
+
+**Difference between mode and typeof, numberic and double**
+
+```{r}
+mode(1)
+typeof(1)
+mode(1:2)
+typeof(1:2)
+
+is.integer(1)
+is.integer(1:2)
+is.integer(as.integer(1))
+is.integer(as.double(1:2))
+
+is.integer(1L)
+```
+

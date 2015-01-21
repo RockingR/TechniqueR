@@ -1,0 +1,70 @@
+---
+title: "R function techniques"
+author: "Kenny"
+date: "Sunday, January 11, 2015"
+output: html_document
+---
+### writing a R file to perform
+
+> making script
+
+```{r}
+
+ 
+x <- c(0.458, 1.6653, 0.83112) # data created
+
+percent <- round(x * 100, digits = 1) # perform calculation
+
+result <- paste(percent, "%", sep = "") # make appearance for result
+
+print(result) # display the result and then save it as .R file through Rstudio
+
+```
+
+### open a R file to perform calculation
+
+```{r}
+source('pastePercent.R') # run this code to run all the code written within
+x
+percent
+result
+```
+
+ 
+### from the script to function
+```{r}
+
+addPercent <- function(x){                          # leave data to x, and assign function to a nickname
+  percent <- round(x * 100, digits = 1)             # calculation performed
+  result <- paste(percent, "%", sep = "")           # format made
+  return(result)                                    # display result = return(result) != print(result)
+}
+ 
+
+```
+
+> **structure of a function**    
+
+> 1. The keyword function always must be followed by parentheses. It tells R that what comes next is a function.  
+> 2. The parentheses after function form the front gate, or argument list, of your function. Between the parentheses, the arguments to the function are given. In this case, there’s only one argument, named x.  
+> 3. The braces, {}, can be seen as the walls of your function. Everything between the braces is part of the assembly line, or the body of your function.
+> 4. The return() statement is the back gate of your function. The object you put between the parentheses is returned from inside the function to your workspace. You can put only one object between the parentheses.
+> 5. If you put all this together, you get a complete function, but R doesn’t know where to find it yet. So, you use the assignment operator <- to put this complete function into an object named addPercent. This is the address R can send numbers to for transformation. Now the function has a nice name and is ready to use.
+> 6. If you want to control which type of object is given as an argument, you have to do so manually, in the body of the function.
+
+
+## Using the function with new data
+ 
+```{r}
+new.numbers <- c(0.8223, 0.02487, 1.62, 0.4)
+addPercent(new.numbers)
+
+```
+
+### Playing with function objects
+```{r}
+
+ppaste <- addPercent # assign the function to a new nickname
+ppaste(new.numbers)
+
+```

@@ -1,0 +1,6 @@
+person age gender t1 t2 t3 t4 y1 y2 y3 y4
+I 20 Male 0 1 2 3 10 12 15 16
+II 32 Male 0 2 4 5 10 12 15 16
+III 20 Female 0 1 2 3 10 NA 15 16
+IV 20 Male 0 1 2 3 10 12 15 16
+V 20 Male 0 1 NA 3 10 12 15 16
