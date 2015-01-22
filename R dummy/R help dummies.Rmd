@@ -1,0 +1,110 @@
+---
+title: "R help dummies"
+author: "Kenny"
+date: "Thursday, January 22, 2015"
+output: html_document
+---
+
+
+ 
+### When you know exactly what you’re looking for
+
+```
+?date
+
+```
+
+
+ 
+### When you don’t know exactly what you’re looking for
+
+```
+
+??date
+```
+
+ 
+ 
+### Searching the Web for Help with R
+
+```
+
+RSiteSearch("cluster analysis")
+ 
+install.packages("sos")
+
+library("sos")
+
+findFn("cluster")
+ 
+```
+
+> **how to locate R search files**: ![](RhelpFile.png)
+
+
+
+ 
+### Making a Minimal Reproducible Example
+
+```{r}
+dput(cars[1:4, ])
+
+```
+
+ 
+### Creating sample data with random values
+
+```{r}
+set.seed(1)
+x <- rnorm(5)
+x
+
+```
+
+
+```{r}
+
+cards <- c(1:9, "J", "Q", "K", "A")
+suits <- c("Spades", "Diamonds", "Hearts", "Clubs")
+rep(suits, each=13)
+deck <- paste(rep(suits, each=13), cards)
+deck
+set.seed(123)
+sample(deck, 7) # now allow replacement or repeatition
+
+```
+
+```{r}
+set.seed(5)
+
+# sample(LETTERS[1:3], 12)
+# Error in sample.int(length(x), size, replace, prob) : 
+#   cannot take a sample larger than the population when 'replace = FALSE'
+
+sample(LETTERS[1:3], 12, replace=TRUE) # allow the elements to repeat
+
+```
+
+```{r}
+set.seed(42)
+dat <- data.frame(
+   x = sample(1:5),
+   y = sample(c("yes", "no"), 5, replace = TRUE)
+)
+dat
+
+```
+
+> you can first create a subset of your data and then use the function dput to get an ASCII representation of your data. Then you can paste this representation in your question to the community. As an example, take the built in dataset cars and create an ASCII representation of the first four rows:
+
+```{r}
+dput(cars[1:4, ])
+```
+
+ 
+> provide info for reproduceable
+
+```{r}
+sessionInfo()
+
+```
