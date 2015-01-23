@@ -1,0 +1,475 @@
+---
+title: "R manipulate data"
+author: "Kenny"
+date: "Friday, January 23, 2015"
+output: html_document
+---
+
+
+### Understanding the five ways of specifying the subset
+> **Get to know diff data objects**: ![](RdataType.png) 
+
+> **How to subset**: ![](RdataSubset.png)
+
+```{r}
+str(islands)
+
+islands[]
+
+islands[c(8, 1, 1, 42)]
+
+islands[-(3:46)]
+
+islands[islands < 20]
+
+islands[c("Madagascar", "Cuba")]
+
+```
+
+ 
+## Subsetting data frames
+
+```{r}
+
+str(iris)
+iris[1:5, ]
+head(iris[, c("Sepal.Length", "Sepal.Width")])
+head(iris[, 'Sepal.Length']) # interesting -- vector
+head(iris[, 'Sepal.Length', drop=FALSE])
+head(iris['Sepal.Length'])
+iris[1:5, c("Sepal.Length", "Sepal.Width")]
+ 
+```
+
+### Taking samples from data
+
+```{r}
+
+sample(1:6, 10, replace=TRUE) # random number created by algo in R
+ 
+set.seed(1) # set a particular set of random sequence for use
+sample(1:6, 10, replace=TRUE) # this one sequence
+sample(1:6, 10, replace=TRUE) # not immediately after, then will be diff set of sequence
+ 
+set.seed(1) # if you do it again, specify the seed value
+sample(1:6, 10, replace=TRUE) # the set of sequence will be the same 
+  
+
+```
+
+```{r}
+set.seed(123)  # set seed value
+index <- sample(1:nrow(iris), 5)  # replace = FALSE IS DEFAULT
+index # assign the sequence to an object, it will remain the same
+iris[index, ]
+ 
+
+```
+
+### Removing duplicate data
+
+```{r}
+
+duplicated(c(1,2,1,3,1,4))
+tail(duplicated(iris), 20)
+which(duplicated(iris))
+iris[duplicated(iris),]
+
+# Specify a logical vector, where FALSE means that the element will be excluded
+tail(iris[!duplicated(iris), ], 20)
+ 
+index <- which(duplicated(iris))
+tail(iris[-index, ], 20)
+ 
+
+```
+### Removing rows with missing data
+ 
+```{r}
+
+str(airquality)
+complete.cases(airquality)
+# a logical vector with the value TRUE for rows that are complete, and FALSE for rows that have some NA value
+ 
+x <- airquality[complete.cases(airquality), ]
+str(x)
+
+# you can make use of na.omit() to omit all rows that contain NA values
+x <- na.omit(airquality)
+str(x)
+ 
+
+```
+ 
+### Adding Calculated Fields to Data
+
+```{r}
+ 
+x <- iris$Sepal.Length / iris$Sepal.Width
+head(x)
+ 
+# if you get tired of typing the dollar sign to extract columns of a data frame 
+y <- with(iris, Sepal.Length / Sepal.Width)
+head(y)
+
+# use the identical() function to get R to tell you whether these values are, in fact, the same:
+identical(x, y)
+ 
+iris$ratio <- iris$Sepal.Length / iris$Sepal.Width
+
+# here is within not with
+iris <- within(iris, ratio <- Sepal.Length / Sepal.Width)
+
+head(iris$ratio)
+ 
+
+```
+
+### Creating subgroups or bins of data
+ 
+> Using cut to create a fixed number of subgroups
+ 
+```{r}
+str(state.x77)
+head(state.x77)
+frost <- state.x77[, "Frost"]
+frost
+cut(frost, 3, include.lowest=TRUE) # include.lowest = FALSE is default
+ 
+
+```
+### Adding labels to cut
+
+```{r}
+cut(frost, 3, include.lowest=TRUE, labels=c("Low", "Med", "High"))
+
+x <- cut(frost, 3, include.lowest=TRUE, labels=c("Low", "Med", "High"))
+x
+str(x)
+table(x)
+ 
+```
+
+ 
+# Combining and Merging Data Sets
+
+> **three ways of data combine**: ![](RdataCombine1.png) 
+> **graphs on data combine**: ![](RdataCombine2.png) 
+
+### Creating sample data to illustrate merging
+
+```{r}
+
+class(state.x77)
+all.states <- as.data.frame(state.x77)
+all.states
+all.states$Name <- rownames(state.x77) # index as states names become a new column
+all.states # with a new column named "Name"
+rownames(all.states)
+str(all.states)
+rownames(all.states) <- NULL
+str(all.states)
+head(all.states)
+
+```
+
+> I wonder how to move "name" column to the beginning
+
+> Creating a subset of cold states
+
+```{r}
+
+cold.states <- all.states[all.states$Frost>150, c("Name", "Frost")] # reorder columns in c("name", ...)
+cold.states
+
+```
+> Creating a subset of large states
+
+```{r}
+
+large.states <- all.states[all.states$Area>=100000, c("Name", "Area")]
+large.states
+ 
+```
+
+
+
+### Using merge to find the intersection of data
+
+> **args for merge**: ![](RdataCombine3.png) 
+
+```{r}
+
+merge(cold.states, large.states)
+merge(cold.states, large.states, all = FALSE)
+merge(cold.states, large.states, all=TRUE)
+merge(cold.states, large.states, all.x = TRUE)
+merge(cold.states, large.states, all.y = TRUE)
+# merge(cold.states, large.states, by.x = TRUE)  # by.x should not be used here
+# merge(cold.states, large.states, by.y = TRUE)
+
+```
+
+  
+### Finding a match
+
+> find positions of large states which also appear in cold states
+
+```{r}
+
+index <- match(cold.states$Name, large.states$Name)
+
+index
+ 
+large.states[na.omit(index), ]
+large.states
+
+```
+ 
+### Making sense of %in%
+
+> returns a logical vector indicating whether there is a match.
+
+```{r}
+
+index <- cold.states$Name %in% large.states$Name
+index
+
+!is.na(match(cold.states$Name,large.states$Name))
+
+cold.states[index, ] # differ from math, this is for cold.states
+ 
+
+```
+# Sorting and Ordering Data
+
+```{r}
+
+str(state.region)
+class(state.region)
+str(state.x77)
+class(state.x77)
+some.states <- data.frame(
+     Region = state.region,
+     state.x77)
+ 
+some.states <- some.states[1:10, 1:3]
+some.states
+ 
+
+```
+
+### sorting vector and data.frame
+ 
+> Sorting a vector in ascending order
+
+```{r}
+
+sort(some.states$Population)
+```
+
+ 
+> Sorting a vector in decreasing order
+
+```{r}
+
+sort(some.states$Population, decreasing=TRUE)
+```
+
+ 
+> Getting the order
+
+```{r}
+
+order.pop <- order(some.states$Population)
+order.pop
+```
+
+
+# sorting the population column
+```{r}
+
+some.states$Population[order.pop]
+```
+
+ 
+> Sorting a data frame in descending order
+
+```{r}
+
+some.states[order.pop, ]
+order(some.states$Population)
+order(some.states$Population, decreasing=TRUE)
+ 
+some.states[order(some.states$Population, decreasing=TRUE), ]
+ 
+
+```
+
+> Sorting on more than one column
+
+```{r}
+# sort region first, upon region order, sort 
+index <- with(some.states, order(Region, Population))
+some.states[index, ]
+ 
+
+```
+
+> Sorting multiple columns in mixed order
+> xtfrm(). This function transforms a vector into a numeric vector that sorts in the same order. After you’ve transformed a vector, you can take the negative to indicate decreasing order.
+
+```{r}
+
+index <- order(-xtfrm(some.states$Region), some.states$Population)
+
+some.states[index, ]
+
+```
+ 
+ 
+### Using the apply() function to summarize arrays
+> **apply and sapply**: ![](RdataApply.png) 
+
+```{r}
+
+str(Titanic)
+Titanic
+apply(Titanic, 1, sum)
+apply(Titanic, 2, sum)
+apply(Titanic, 3, sum)
+apply(Titanic, 4, sum)
+apply(Titanic, c(3, 4), sum)
+
+```
+ 
+### Using lapply() and sapply() to traverse a list or data frame
+
+```{r}
+str(iris)
+class(iris)
+lapply(iris, class)
+sapply(iris, class)
+sapply(iris, mean)
+sapply(iris, function(x) ifelse(is.numeric(x), mean(x), NA))
+ 
+
+```
+
+### Using tapply() to create tabular summaries
+
+```{r}
+
+# You tell R to take the Sepal.Length column, split it according to Species, and then calculate the mean for each group.
+tapply(iris$Sepal.Length, iris$Species, mean)
+
+with(iris, tapply(Sepal.Length, Species, mean))
+ 
+```
+
+### Using tapply() to create higher-dimensional tables
+
+```{r}
+
+str(mtcars)
+mtcars
+cars <- within(mtcars,
+    am <- factor(am, levels=0:1, labels=c("Automatic", "Manual"))
+)
+cars
+with(cars, tapply(mpg, am, mean))
+with(cars, tapply(mpg, list(gear, am), mean)) # gear as rows, am as columns
+ 
+
+```
+### Using aggregate()
+
+```{r}
+
+# created three columns
+with(cars, aggregate(mpg, list(gear=gear, am=am), mean)) 
+
+```
+ 
+### Getting to Know the Formula Interface
+
+> **How to use formula interface**: ![](RformulaInterface.png)
+
+> you tell aggregate to model mpg as a function of gear as well as am and to calculate the mean
+
+```{r}
+
+aggregate(mpg ~ gear + am, data=cars, mean)
+ 
+aov(mpg ~ gear + am, data=cars)
+ 
+library(lattice)
+
+xyplot(mpg ~ gear + am, data=cars)
+ 
+```
+
+> two ways of using aggregate() 
+
+```
+
+## S3 method for class ‘data.frame’
+aggregate(x, by, FUN, ..., simplify = TRUE)
+## S3 method for class ‘formula’
+aggregate(formula, data, FUN, ...,
+          subset, na.action = na.omit)
+
+```
+
+ 
+### Getting started with the reshape2 package
+
+```{r}
+
+library("reshape2")
+ 
+goals <- data.frame(
+    Game = c("1st", "2nd", "3rd", "4th"),
+    Venue = c("Bruges", "Ghent", "Ghent", "Bruges"),
+    Granny = c(12, 4, 5, 6),
+    Geraldine = c(5, 4, 2, 4),
+    Gertrude = c(11, 5, 6, 7)
+)
+ 
+
+```
+
+> Melting data to long format
+
+```{r}
+
+# identifiers
+mgoals <- melt(goals)
+mgoals <- melt(goals, id.vars=c("Game", "Venue"))
+str(mgoals)
+class(mgoals)
+mgoals
+ 
+```
+
+> Casting data to wide format, better than R primer's techniques
+
+```{r}
+
+dcast(mgoals,  Venue + Game ~ variable, sum)
+dcast(mgoals, variable ~ Venue , sum)
+dcast(mgoals,  Venue ~ variable , sum)
+ 
+dcast(mgoals,  Venue + variable ~ Game , sum)
+ 
+
+```
+> how to apply in ggplot2
+
+```{r}
+
+library(ggplot2)
+
+ggplot(mgoals, aes(x=variable, y=value, fill=Game)) + geom_bar()
+```
+

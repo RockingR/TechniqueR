@@ -1,0 +1,209 @@
+---
+title: "R data in and out dummies"
+author: "Kenny"
+date: "Thursday, January 22, 2015"
+output: html_document
+---
+
+
+ 
+### Entering data in the R text editor
+
+> note: you cannot modify column names here
+
+```
+elements <- data.frame()
+
+elements <- edit(elements) # then save the data
+ 
+print(elements) # both fine to check the data
+
+elements 
+
+```
+
+ 
+### Using the Clipboard to copy and paste
+ 
+> Reminder : This only works on Windows
+> stringsAsFactors: If TRUE, this argument converts strings to factors. It’s FALSE by default.
+
+```
+# first, select and copy from spreadsheet, then
+x <- readClipboard() 
+x
+
+# if dealing with tabular data, use read.table()
+x <- read.table(file = "clipboard", sep = "\t", header=TRUE)
+x
+
+```
+
+ 
+### Reading data in CSV files
+ 
+### Using read.csv() to import data
+
+```
+
+elements <- read.csv(file.path("f:", "elements.csv"))
+# the default option is to convert character strings into factors
+
+str(elements)
+
+elements <- read.csv(file.path("f:", "elements.csv"), stringsAsFactors=FALSE)
+
+str(elements)
+
+```
+
+> R converts spaces in the column names to periods (for example, in the column State.At.STP).
+
+> If you have a file in the EU format mentioned earlier (where commas are used as decimal separators and semicolons are used as field separators), you need to import it to R using the read.csv2() function.
+
+> **Using read.table() arguments**  
+> The read.table() function has a number of arguments that give you fine control over the specification of the text file you want to import. Here are some of these arguments: 
+
+> header: header = TRUE  
+
+> sep: sep = "," for CSV file; sep = "\t" for tab-separated files  
+
+> quote: return with string with "", if 'string' in txt file, we need to use quote = "'" 
+
+> nrows: specify which rows to read  
+
+> skip: allow to ignore a number of rows from top  
+
+> stringAsFactor: FALSE by default  
+ 
+
+
+### Reading data from Excel
+
+```
+install.packages("XLConnect")
+
+library("XLConnect")
+
+excel.file <- file.path("~/Elements.xlsx")
+ 
+elements <- readWorksheetFromFile(excel.file, sheet=1)
+
+elements <- readWorksheetFromFile(excel.file, sheet="Sheet1")
+
+```
+
+> **Difficulty in installing this package**: ![](RdataExcelIn.png)  
+
+
+### Working with other data types
+
+```
+
+library(foreign)
+
+read.spss(file="location/of/myfile")
+
+```
+
+> **Difficult foreign software import function**: ![](RdataImport.png)  
+
+ 
+### Getting Your Data out of R
+
+```
+# this only works for a row of data or vector
+writeClipboard(names(iris)) 
+
+# cope and paste outside of R about tabular data to Excel or spreadsheet
+write.table(head(iris), file="clipboard", sep="\t", row.names=FALSE)
+
+```
+
+ 
+### Working with Files and Folders
+
+> getting and setting working directory
+
+```
+
+getwd()
+[1] “F:/git”
+
+setwd("F:/git/roxygen2")
+getwd()
+
+[1] “F:/git/roxygen2”
+
+setwd("c:\\git\\stringr")
+getwd()
+
+[1] “F:/git/stringr”
+
+
+file.path("F:", "git", "surveyor")
+
+[1] “f:/git/surveyor”
+ 
+setwd(file.path("F:", "git", "roxygen2"))
+
+getwd()
+
+[1] “f:/git/surveyor”
+
+file.path("F:", "git", "roxygen2", "roxygen2", "README.md" )
+
+[1] “F:/git/roxygen2/roxygen2/README.md”
+ 
+```
+
+### Manipulating files
+```
+
+list.files(file.path("F:", "git", "roxygen2"))
+
+[1] “roxygen2”            “roxygen2.Rcheck”
+[3] “roxygen2_2.0.tar.gz” “roxygen2_2.1.tar.gz”
+
+```
+
+> **functions on manipulate files**: ![](RfileManipulate.png) 
+
+> In the next example, you first **create a temporary file**, then **save a copy of the iris data frame to this file**. To test that the file is on disk, you then **read the newly created file to a new variable and inspect this variable**. Finally, you **delete the temporary file from disk**.
+
+```
+
+my.file <- tempfile() # link my.file to the name of a file in a temporary folder on your system
+
+my.file # return the name of the temporary file in temporary folder
+
+[1] “C:\\Users\\Andrie\\AppData\\Local\\Temp\\ RtmpGYeLTj\\file14d4366b6095”
+
+write.csv(iris, file=my.file) # read the object into the temporary file as CSV file
+
+list.files(tempdir()) 
+# tempdir() return the path of temporary folder
+# list.files() show the names of temporary file in the temporary directory
+
+[1] “file14d4366b6095”
+
+```
+```
+
+file.iris <- read.csv(my.file) # read data of CSV file into object file.iris
+
+str(file.iris) # row.nameS = TRUE by default, X as row names is included below
+
+‘data.frame’:                              150 obs. of  6 variables:
+$ X           : int  1 2 3 4 5 6 7 8 9 10 ...
+$ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+$ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+$ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+$ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+$ Species     : Factor w/ 3 levels “setosa”,”versicolor”,..: 1 1 1 1 1 1 1 1 1 1 ...
+ 
+file.remove(my.file) # remove the temporary file
+
+list.files(tempdir()) # check the temporary file from temporary directory
+character(0)
+```
