@@ -1,0 +1,234 @@
+---
+title: "R base graphics dummies"
+author: "Kenny"
+date: "Saturday, January 24, 2015"
+output: html_document
+---
+
+
+```{r}
+
+
+# Creating Different Types of Plots
+ 
+ 
+## Getting an overview of plot
+ 
+large.islands <- head(sort(islands, decreasing=TRUE), 10)
+large.islands
+plot(large.islands, main="Land area of continents and islands",
+   ylab="Land area in square miles")
+
+ # adj - one or two values in [0, 1] which specify the x (and optionally y) adjustment of the labels. On most devices values outside that interval will also work.
+text(large.islands, labels=names(large.islands), adj=c(0.5, 1))
+
+ 
+
+```
+
+### Adding points and lines to a plot
+
+```{r}
+
+str(faithful)
+head(faithful, 20)
+plot(faithful)
+```
+
+### Adding points
+
+```{r}
+
+
+short.eruptions <- with(faithful, faithful[eruptions < 3, ])
+ 
+plot(faithful)
+points(short.eruptions, col="red", pch=19)
+
+```
+
+> **diff shapes for points**: ![](RgraphicBase1.png)
+  
+> You can change the foreground and background color of symbols as well as lines. You’ve already seen how to set the foreground color using the argument col=”red”. Some plotting symbols also use a background color, and you can use the argument bg to set the background color (for example, bg=”green”). 
+
+```{r}
+
+## Changing the color
+
+head(colors(), 10)
+```
+ 
+### **Adding lines to a plot**
+
+
+```{r}
+
+fit <- lm(waiting~eruptions, data=faithful)
+fit
+fitted(fit)
+ 
+plot(faithful)
+
+# the following three lines are the same line
+lines(faithful$eruptions, fitted(fit), col="blue")
+abline(a=coef(fit)[1], b=coef(fit)[2])  # a, b  the intercept and slope, single values.
+abline(fit, col = "red")
+
+# a vertical line
+abline(v=3, col="purple") # v = eruptions value as 3
+
+# a horizontal line
+abline(h=mean(faithful$waiting))
+
+```
+
+
+### **Different plot types**
+
+```{r}
+
+str(LakeHuron)  # this is time series
+head(LakeHuron, 20) # it looks like a vector of numeric without date, but it is not
+
+plot(LakeHuron, type="l", main='type="l"')
+plot(LakeHuron, type="p", main='type=p"')
+plot(LakeHuron, type="b", main='type="b"') # this one is more telling
+ 
+```
+
+### type of n
+
+```{r}
+
+x <- seq(0.5, 1.5, 0.25)
+y <- rep(1, length(x))
+data.frame(x, y)
+plot(x, y, type="n")
+points(x, y)
+ 
+
+with(mtcars, plot(mpg, disp)) # points 
+with(mtcars, boxplot(disp, mpg)) # boxplot
+with(mtcars, hist(mpg)) # histogram
+
+```
+
+# Controlling Plot Options and Arguments
+
+
+```{r}
+## Adding titles and axis labels
+
+plot(faithful,
+   main = "Eruptions of Old Faithful",
+   xlab = "Eruption time (min)",
+   ylab = "Waiting time to next eruption (min)")
+ 
+```
+
+
+```{r}
+
+
+## Changing plot options
+ 
+### The axes label style
+# las numeric in {0,1,2,3}; the style of axis labels.
+
+# 0:
+# always parallel to the axis [default],
+# 
+# 1:
+# always horizontal,
+# 
+# 2:
+# always perpendicular to the axis,
+# 
+# 3:
+# always vertical.
+
+ 
+plot(faithful, las=1)
+plot(faithful, las=3)
+
+ 
+### The box type
+# bty   A character string which determined the type of box which is drawn about plots. If bty is one of "o" (the default), "l", "7", "c", "u", or "]" the resulting box resembles the corresponding upper case letter. A value of "n" suppresses the box.
+ 
+plot(faithful, bty="n") # try the options out
+plot(faithful, bty = "7")
+ 
+### More than one option
+ 
+plot(faithful, las=1, bty="l", col="red", pch=19)
+ 
+```
+
+### Font size of text and axes
+
+```{r}
+
+x <- seq(0.5, 1.5, 0.25)
+y <- rep(1, length(x))
+plot(x, y, main="Effect of cex on text size")
+text(x, y+0.1, labels=x, cex=x)
+ 
+plot(x, y, main="Effect of cex.main, cex.lab and cex.axis",
+  cex.main=1.25, cex.lab=1.5, cex.axis=0.75)
+ 
+
+```
+
+### Putting multiple plots on a single page
+
+```{r}
+
+old.par <- par(mfrow=c(1, 2)) # set the new par
+# par(mfrow = c(2,2)), 4 plot, row by row
+# par(mfcol = c(2,2)), 4 plot, col by col
+plot(faithful, main="Faithful eruptions")
+plot(large.islands, main="Islands", ylab="Area")
+par(old.par) # return to the old par from the new, prevent the following plots to have the save pane structure
+
+x <- seq(0.5, 1.5, 0.25)
+y <- rep(1, length(x))
+plot(x, y, main="Effect of cex on text size")
+text(x, y+0.1, labels=x, cex=x)
+ 
+plot(x, y, main="Effect of cex.main, cex.lab and cex.axis",
+  cex.main=1.25, cex.lab=1.5, cex.axis=0.75)
+
+```
+
+```{r}
+
+old.par <- par(mfrow=c(2, 2)) # set the new par
+# par(mfrow = c(2,2)), 4 plot, row by row
+# par(mfcol = c(2,2)), 4 plot, col by col
+plot(faithful, main="Faithful eruptions")
+plot(large.islands, main="Islands", ylab="Area")
+# par(old.par) # return to the old par from the new, prevent the following plots to have the save pane structure
+
+x <- seq(0.5, 1.5, 0.25)
+y <- rep(1, length(x))
+plot(x, y, main="Effect of cex on text size")
+text(x, y+0.1, labels=x, cex=x)
+ 
+plot(x, y, main="Effect of cex.main, cex.lab and cex.axis",
+  cex.main=1.25, cex.lab=1.5, cex.axis=0.75)
+
+```
+ 
+### Saving Graphics to Image Files
+
+> **How to save a plot**: ![](RsaveImage.png)
+
+```
+# step 1: choose a location to save your plot
+# setwd("~/")
+# getwd()
+png(filename="faithful.png") # step 2
+plot(faithful) # step 3
+dev.off() # step 4
+
+```

@@ -1,0 +1,226 @@
+---
+title: "R Lattice dummies"
+author: "Kenny"
+date: "Saturday, January 24, 2015"
+output: html_document
+---
+
+### what is faceted graphics
+
+> Creating subsets of data and plotting each subset allows you to see whether there are patterns between different subsets of the data. For example, a sales manager may want to see a sales report for different regions in the form of a graphic. A biologist may want to investigate different species of butterflies and compare the differences on a plot.
+ 
+> A single graphic that provides this kind of simultaneous view of different slices through the data is called a faceted graphic.
+
+> **How to make lattice plot**: ![](RLattice1.png)
+
+```{r} 
+
+str(mtcars)
+head(mtcars)
+
+library("lattice")
+ 
+## Making a lattice scatterplot
+ 
+xyplot(mpg ~ hp | factor(cyl), data=mtcars)
+ 
+## Adding trend lines
+# you want to specify that the type is both points (type=”p”) and regression (type=”r”). You can combine different types with the c() function
+xyplot(mpg ~ hp | factor(cyl), data=mtcars,
+   type=c("p", "r"))
+
+``` 
+
+ 
+# Changing Plot Options
+ 
+### Adding titles and labels
+
+```{r}
+
+
+xyplot(mpg ~ hp | factor(cyl), data=mtcars,
+   type=c("p", "r"),
+   main="Fuel economy vs. Performance",
+   xlab="Performance (horse power)",
+   ylab="Fuel economy (miles per gallon)",
+)
+
+
+xyplot(mpg ~ hp | factor(cyl), data=mtcars,
+   type=c("p", "r"),
+   main=list(
+       label="Fuel economy vs. Performance given Number of Cylinders",
+       cex=0.75)
+)
+
+```
+ 
+## Changing the font size of titles and labels
+
+```{r}
+
+
+xyplot(mpg ~ hp | factor(cyl), data=mtcars,
+   type=c("p", "r"),
+   main=list(
+       label="Fuel economy vs. Performance given Number of Cylinders",
+       cex=0.75),
+   xlab=list(
+       label="Performance (horse power)",
+       cex=0.75),
+   ylab=list(
+       label="Fuel economy (miles per gallon)",
+       cex=0.75),
+   scales=list(cex=0.5) # compare with below to see the diff it makes
+)
+ 
+
+xyplot(mpg ~ hp | factor(cyl), data=mtcars,
+   type=c("p", "r"),
+   main=list(
+       label="Fuel economy vs. Performance given Number of Cylinders",
+       cex=0.75),
+   xlab=list(
+       label="Performance (horse power)",
+       cex=0.75),
+   ylab=list(
+       label="Fuel economy (miles per gallon)",
+       cex=0.75),
+   # scales=list(cex=0.5)
+)
+```
+ 
+## Using themes to modify plot options
+
+> **How to make themes**: ![](RLattice2.png)
+
+```{r}
+
+xyplot(mpg ~ hp | factor(cyl), data=mtcars,
+   type=c("p", "r"),
+   par.settings=simpleTheme(col="red", col.line="blue")
+)
+
+```
+ 
+ 
+# Plotting Different Types
+ 
+## Making a bar chart
+
+> **Diff charts types**: ![](RLattice3.png)
+
+```{r}
+
+mtcars$cars <- rownames(mtcars)
+ 
+barchart(cars ~ mpg | factor(cyl), data=mtcars,
+   main="barchart",
+   scales=list(cex=0.5),
+   layout=c(3, 1)
+)
+
+```
+
+ 
+## Making a box-and-whisker plot
+
+```{r}
+bwplot(~ hp | factor(cyl), data=mtcars, main="bwplot")
+
+```
+
+ 
+ 
+# Plotting Data in Groups
+ 
+## Using data in tall format
+
+```{r}
+
+str(longley)
+head(longley)
+library("reshape2")
+mlongley <- melt(longley, id.vars="Year")
+mlongley
+
+str(mlongley)
+ 
+xyplot(value ~ Year | variable, data=mlongley,
+   layout=c(6, 1),
+   par.strip.text=list(cex=0.7), # take effect on the titles of the 6 boxes
+   scales=list(cex=0.7)
+)
+ 
+
+```
+
+## Creating a chart with groups
+
+```{r}
+
+mtcars$cars <- rownames(mtcars)
+mtcars$am <- with(mtcars, ifelse(am==0, "Automatic", "Manual"))
+ 
+barchart(cars ~ mpg | factor(cyl), data=mtcars,
+   group=am,  # try to make a diff, but not obvious
+   scales=list(cex=0.5),
+   layout=c(3, 1),
+)
+ 
+
+```
+
+## Adding a key
+
+
+
+```{r}
+
+barchart(cars ~ mpg | factor(cyl), data=mtcars,
+   main="barchart with groups",
+   group=am,
+   auto.key=TRUE,
+   par.settings = simpleTheme(col=c("grey80", "grey20")), # auto.key and par.settings have to go together
+   scales=list(cex=0.5),
+   layout=c(3, 1)
+)
+ 
+
+```
+ 
+# Printing and Saving a Lattice Plot
+ 
+## Assigning a lattice plot to an object
+
+```{r}
+
+my.plot <- xyplot(mpg ~ hp | cyl, data=mtcars)
+class(my.plot)
+ 
+```
+
+## Printing a lattice plot in a script
+
+```{r}
+
+xyplot(mpg ~ hp | as.factor(cyl), data=mtcars)
+ 
+my.plot <- xyplot(mpg ~ hp | as.factor(cyl), data=mtcars)
+
+print(my.plot)
+ 
+```
+
+ 
+## Saving a lattice plot to file
+ 
+```
+
+setwd("~/")
+trellis.device(device="png", filename="xyplot.png")
+print(my.plot)
+dev.off()
+
+```

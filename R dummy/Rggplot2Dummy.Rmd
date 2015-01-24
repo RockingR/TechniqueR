@@ -1,0 +1,132 @@
+---
+title: "R ggplot2 dummies"
+author: "Kenny"
+date: "Saturday, January 24, 2015"
+output: html_document
+---
+
+ 
+# Installing and Loading ggplot2
+
+```{r}
+
+# install.packages("ggplot2")
+library("ggplot2")
+ 
+# Looking At Layers
+ 
+ggplot(faithful, aes(x=eruptions, y=waiting)) + geom_point() + stat_smooth()
+ 
+```
+
+> **How ggplot work**: ![](Rggplot1.png)
+
+### Creating a bar chart
+
+> **How geoms and stats work**: ![](Rggplot2.png)
+
+```{r}
+str(quakes)
+head(quakes, 20)
+ggplot(quakes, aes(x=depth)) + geom_bar()
+ggplot(quakes, aes(x=depth)) + geom_bar(binwidth=50) # bins cut by 50
+
+head(quakes)
+head(with(quakes, round(depth, -1)))
+quakes.agg <- aggregate(mag ~ round(depth, -1), data=quakes, FUN=length)
+names(quakes.agg) <- c("depth", "mag")
+
+head(quakes.agg, 20)
+quakes.agg
+ggplot(quakes.agg, aes(x=depth, y=mag)) +
+   geom_bar(stat="identity")
+ 
+```
+
+> In summary, you can use geom_bar() to create a histogram and let ggplot2 summarize your data, or you can presummarize your data and then use stat=”identity” to plot a bar chart.
+
+ 
+## **How to understand geoms and stat_**
+
+> **How geoms and stats work2**: ![](Rggplot4.png)
+
+
+> **How geoms and stats work2**: ![](Rggplot3.png)
+
+```{r}
+### Making a scatterplot
+
+ggplot(quakes, aes(x=long, y=lat)) + geom_point()
+
+ 
+### Creating line charts
+ 
+ggplot(longley, aes(x=Year, y=Unemployed)) + geom_line()
+ 
+ 
+# Sussing Stats
+ 
+## Binning data
+ 
+ggplot(quakes, aes(x=depth)) + geom_bar(binwidth=50)
+ggplot(quakes, aes(x=depth)) + stat_bin(binwidth=50)
+ 
+## Smoothing data
+ 
+ggplot(longley, aes(x=Year, y=Employed)) + geom_point()
+ 
+ggplot(longley, aes(x=Year, y=Employed)) +
+   geom_point() + stat_smooth()
+ 
+ggplot(longley, aes(x=Year, y=Employed)) +
+   geom_point() + stat_smooth(method="lm")
+ 
+```
+
+# Adding Facets, Scales, and Options
+ 
+## Adding facets
+
+```{r}
+
+ggplot(mtcars, aes(x=hp, y=mpg)) + geom_point()
+
+```
+
+> Then, to add facets, use the function facet_grid(). This function allows you to create a two-dimensional grid that defines the facet variables. You write the argument to facet_grid() as a formula of the form rows ~ columns. In other words, a tilde (~) separates the row variable from the column variable.
+ 
+> To illustrate, add facets with the number of cylinders as the columns. This means your formula is ~cyl. Notice that because there are no rows as facets, there is nothing before the tilde character:
+
+```{r}
+ggplot(mtcars, aes(x=hp, y=mpg)) + geom_point() +
+   stat_smooth(method="lm") + facet_grid(~cyl)
+ 
+ 
+ggplot(mtcars, aes(x=hp, y=mpg)) +
+   geom_point(aes(shape=factor(cyl), colour=factor(cyl)))
+ 
+```
+
+> The name of a scale defaults to the name of the variable that gets mapped to it. In this case, **you map factor(cyl) to the scale**. To change the appearance of a scale, you need to add a scale function to your plot. The specific scale function you use is dependent on the type of scale, but in this case, you have **a shape scale with discrete values, so you use the scale_shape_ discrete() function. You also have a color scale with discrete value, so you can control that with scale_colour_discrete()**. To change the name that appears in the legend of the plot, you need to specify the argument name to these scales. For example, **change the name of the legend to “Cylinders” by setting the argument name=”Cylinders”**:
+
+```{r}
+
+ggplot(mtcars, aes(x=hp, y=mpg)) +
+   geom_point(aes(shape=factor(cyl), colour=factor(cyl))) +
+   scale_shape_discrete(name="Cylinders") +
+   scale_colour_discrete(name="Cylinders")
+ 
+```
+## Changing options
+
+> To add a main title, you have to specify the title argument to the function opts(): 
+
+```
+
+ggplot(mtcars, aes(x=hp, y=mpg)) + geom_point(color="red") +
+   xlab("Performance (horse power") +
+   ylab("Fuel consumption (mpg)") +
+   opts(title = "Motor car comparison")
+
+Error: Use 'theme' instead. (Defunct; last used in version 0.9.1)
+```
