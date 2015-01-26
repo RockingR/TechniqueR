@@ -1,0 +1,48 @@
+---
+title: "R packages tips dummies"
+author: "Kenny"
+date: "Sunday, January 25, 2015"
+output: html_document
+---
+
+```
+ 
+## to set the Imperial College, UK mirror as your default CRAN mirror, include this line in your .RProfile:
+ 
+options("repos" = c(CRAN = "http://cran.ma.imperial.ac.uk/"))
+ 
+## Finding Interesting Packages
+ 
+## Installing Packages
+ 
+install.packages("fortunes")
+ 
+## Loading Packages
+ 
+library("fortunes")
+ 
+## Reading the Package Manual and Vignette
+ 
+library(help=fortunes)
+vignette("fortunes")
+ 
+## Updating Packages
+ 
+update.packages()
+ 
+## Unloading Packages
+ 
+search()
+detach(package:fortunes, unload=TRUE)
+ 
+## Forging Ahead with R-Forge
+ 
+install.packages("data.table", repos="http://R-Forge.R-project.org")
+ 
+## Conducting Installations from BioConductor
+ 
+source("http://bioconductor.org/biocLite.R")
+ 
+## Reading the R Manual
+
+```

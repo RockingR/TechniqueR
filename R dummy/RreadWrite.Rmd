@@ -1,0 +1,268 @@
+---
+title: "R read write dummies"
+author: "Kenny"
+date: "Sunday, January 25, 2015"
+output: html_document
+---
+
+# Using Character Vectors for Text Data
+ 
+## Assigning a value to a character vector
+
+```{r}
+
+x <- "Hello world!"
+is.character(x)
+length(x)
+nchar(x)
+
+```
+ 
+## Creating a character vector with more than one element
+
+```{r}
+
+x <- c("Hello", "world!")
+length(x)
+nchar(x)
+
+```
+ 
+## Extracting a subset of a vector
+
+```{r}
+
+letters
+LETTERS
+letters[10]
+LETTERS[24:26]
+tail(LETTERS, 5)
+head(letters, 10)
+
+
+```
+
+## Naming the values in your vectors
+ 
+### Looking at how named vectors work
+
+```{r}
+
+str(islands)
+head(islands)
+islands[c("Asia", "Africa", "Antarctica")]
+names(islands)[1:9]
+names(sort(islands, decreasing=TRUE)[1:6])
+ 
+```
+
+## Creating and assigning named vectors
+
+```{r}
+
+
+month.days <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+month.name
+names(month.days) <- month.name
+month.days
+month.days[month.days==31]
+names(month.days[month.days==31])
+ 
+```
+
+# Manipulating Text
+ 
+## String theory: Combining and splitting strings
+ 
+### Splitting text
+
+```{r}
+
+
+pangram <- "The quick brown fox jumps over the lazy dog"
+pangram
+strsplit(pangram, " ")
+class(strsplit(pangram, " "))
+ 
+words <- strsplit(pangram, " ")[[1]]
+words
+ 
+```
+### Changing text case
+
+```{r}
+
+unique(tolower(words))
+toupper(words[c(4, 9)])
+tolower("Some TEXT in Mixed CASE")
+
+```
+ 
+### Concatenating text
+
+```{r}
+
+paste("The", "quick", "brown", "fox")
+paste(c("The", "quick", "brown", "fox"))
+paste(words, collapse=" ")
+paste(words, collapse="_")
+paste(LETTERS[1:5], 1:5, sep="_", collapse="---")
+paste("Sample", 1:5)
+paste(c("A", "B"), c(1, 2, 3, 4), sep="-")
+paste(c("A"), c(1, 2, 3, 4, 5), sep="-")
+ 
+```
+
+## Sorting text
+
+```{r}
+
+sort(letters, decreasing=TRUE)
+sort(words)
+ 
+```
+
+## Finding text inside text
+
+```{r}
+
+### Searching for individual words
+state.name
+ 
+### Searching by position
+## If you know the exact position of a subtext inside a text element, you use the substr() function to return the value. To extract the subtext that starts at the third position and stops at the sixth position of state.name
+ 
+head(substr(state.name, start=3, stop=6))
+ 
+```
+
+### Searching by pattern
+
+> "New" is pattern, state.name is the vector for search
+> The result of grep() is a numeric vector with the positions of each of the elements that contain the matching pattern.
+
+```{r}
+
+grep("New", state.name)
+state.name[29]
+state.name[grep("New", state.name)]
+state.name[grep("new", state.name)]
+
+```
+ 
+### Searching for multiple words
+
+```{r}
+
+state.name[grep(" ", state.name)]
+state.name[grep("East", state.name)]
+ 
+```
+
+## Substituting text
+
+> The sub() function (short for substitute) searches for a pattern in text and replaces this pattern with replacement text. You use sub() to substitute text for text, and you use its cousin gsub() to substitute all occurrences of a pattern. (The g in gsub() stands for global.)
+ 
+> Suppose you have the sentence He is a wolf in cheap clothing, which is clearly a mistake. You can fix it with a gsub() substitution. The gsub() function takes three arguments: the pattern to find, the replacement pattern, and the text to modify:
+
+```{r}
+
+gsub("cheap", "sheep's", "A wolf in cheap clothing")
+x <- c("file_a.csv", "file_b.csv", "file_c.csv")
+y <- gsub("file_", "", x)
+y
+gsub(".csv", "", y)
+ 
+
+```
+ 
+#### Extending text functionality with stringr
+
+```
+
+install.packages("stringr")
+library(stringr)
+ 
+```
+
+ 
+## Reviving up with regular expressions
+
+> **R string package**: ![](Rtext1.png)
+
+> **R string**: ![](Rtext2.png)
+
+```{r}
+
+rwords <- c("bach", "back", "beech", "beach", "black")
+grep("beach|beech", rwords)
+rwords[grep("beach|beech", rwords)]
+rwords[grep("be(a|e)ch", rwords)]
+rwords[grep("b(e*|a*)ch", rwords)]
+
+```
+
+ 
+ 
+# Factoring in Factors
+ 
+## Creating a factor
+
+```{r}
+
+directions <- c("North", "East", "South", "South")
+factor(directions)
+factor(directions, levels= c("North", "East", "South", "West"))
+factor(directions, levels= c("North", "East", "South", "West"), labels=c("N", "E", "S", "W"))
+ 
+
+```
+
+## Converting a factor
+
+```{r}
+
+
+directions <- c("North", "East", "South", "South")
+directions.factor <- factor(directions)
+directions.factor
+as.character(directions.factor)
+as.numeric(directions.factor)
+ 
+numbers <- factor(c(9, 8, 10, 8, 9))
+as.character(numbers)
+as.numeric(numbers)
+as.numeric(as.character(numbers))
+ 
+## Looking at levels
+ 
+str(state.region)
+state.region
+levels(state.region)
+levels(state.region) <- c("NE", "S", "NC", "W")
+head(state.region)
+nlevels(state.region)
+length(levels(state.region))
+levels(state.region)[2:3]
+
+```
+
+## ordered factors
+
+> factor() with argument ordered = TRUE
+
+> ordered()
+
+```{r}
+
+status <- c("Lo", "Hi", "Med", "Med", "Hi")
+
+ordered.status <- factor(status, levels = c("Lo", "Med", "Hi"), ordered = TRUE)
+
+ordered.status
+
+table(status)
+
+table(ordered.status)
+
+```

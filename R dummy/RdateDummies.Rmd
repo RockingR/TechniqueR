@@ -1,0 +1,117 @@
+---
+title: "R date dummies"
+author: "Kenny"
+date: "Sunday, January 25, 2015"
+output: html_document
+---
+ 
+# Working with Dates
+
+```{r}
+
+xd <- as.Date("2012-07-27")
+xd
+str(xd)
+weekdays(xd)
+xd + 7
+xd + 0:6
+weekdays(xd + 0:6)
+ 
+startDate <- as.Date("2012-01-01")
+xm <- seq(startDate, by="2 months", length.out=6)
+xm
+ months(xm)
+quarters(xm)
+```
+
+> The results of many date functions, including weekdays() and months() depends on the locale of the machine you’re working on. The locale describes elements of international customization on a specific installation of R. This includes date formats, language settings, and currency settings. To find out some of the locale settings on your machine, use Sys.localeconv(). R sets the value of these variables at install time by interrogating the operating system for details. You can change these settings at runtime or during the session with Sys.setlocale().
+
+```{r}
+
+Sys.localeconv()
+
+```
+
+> **different time intervals**: ![](Rdate1.png)
+
+> This rather cryptic line of code indicates that the date format consists of the day (%d), full month name (%B), and the year with century (%Y), with spaces between each element.
+ 
+> Table 6-2 lists some of the many date formatting elements that you can use to specify dates. You can access the full list by typing ?strptime in your R console.
+
+```{r}
+
+as.Date("27/July/2012", format="%d/%B/%Y")  # so far anything with character month won't work
+as.Date("27/七月/2012", format="%d/%B/%Y")
+
+as.Date("27/07/2012", format="%d/%m/%Y")  
+as.Date("27/7/12", format="%d/%m/%y")
+ 
+```
+
+# Adding Time Information to Dates
+
+> **format date and time**: ![](Rdate2.png)
+
+```{r}
+
+apollo <- "七月 20, 1969, 20:17:39"
+apollo.fmt <- "%B %d, %Y, %H:%M:%S"
+xct <- as.POSIXct(apollo, format=apollo.fmt, tz="UTC")
+xct
+
+
+apollo <- "07/20/1969, 20:17:39"
+apollo.fmt <- "%m/%d/%Y, %H:%M:%S"
+xct <- as.POSIXct(apollo, format=apollo.fmt, tz="UTC")
+xct
+
+format(xct, "%d/%m/%y")
+format(xct, "%S minutes past %I %p, on %d %B %Y")
+ 
+```
+# Performing Operations on Dates and Times
+ 
+## Addition and subtraction
+
+> **difference between POSIXct and POSIXlt**: ![](Rdate3.png)
+
+> **difference between POSIXct and POSIXlt**: ![](Rdate4.png)
+
+
+```{r}
+
+24*60*60
+xct
+xct + 7*86400
+xct + 3*60*60
+xct - 7*86400
+as.Date(xct)
+as.Date(xct) - 7
+
+```
+ 
+## Comparison of dates
+
+```{r}
+
+Sys.time()
+Sys.time() < xct
+ 
+dec.start <- as.POSIXct("1950-01-01") # turn a string into a date
+dec <- seq(dec.start, by="10 years", length.out=4)
+dec
+dec > xct
+
+```
+ 
+## Extraction
+
+```{r}
+
+xlt <- as.POSIXlt(xct) # turn a POSIXct into a POSIXlt object
+xlt
+xlt$year
+xlt$mon
+unclass(xlt)
+class(unclass(xlt))
+```

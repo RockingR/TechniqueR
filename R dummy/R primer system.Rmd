@@ -1,0 +1,159 @@
+---
+title: "R primer system"
+author: "Kenny"
+date: "Sunday, January 25, 2015"
+output: html_document
+---
+
+ule 5.1
+help(mean)      # Get help about the function mean 
+help("mean")    # Same as above
+?mean           # Same as above
+help.start()    # Start browser and the general help
+apropos("mean")
+help.search("mean")
+??mean                # Same as above
+RSiteSearch("sas2r")  # Search for the string sas2r in online 
+                      # help manuals and archived mailing lists
+
+
+Rule 5.2
+sd
+boxplot
+methods(boxplot)
+boxplot.matrix   # See source for non-hidden method
+boxplot.formula  # Try to see source for hidden method
+getAnywhere("boxplot.formula")
+library(lme4)
+refit           # Try to show the source for the refit function
+showMethods("refit")     # Show available methods
+# List the source code for refit for class type numeric
+findMethods("refit", classes="numeric")
+
+
+Rule 5.3
+install.packages("foreign")  # Install the foreign package 
+install.packages("foreign", lib="C:/my/private/R-packages/")
+.libPaths()     # Output from a machine running ubuntu
+# Install a package from http://www.some.url.dk/Rfiles/
+install.packages("newRpackage", 
+                 repos="www.some.url.dk/Rfiles/")
+# Install the newRpackage package from a local source file 
+# located in the current working directory 
+install.packages("newRpackage_1.0-1.tar.gz", repos=NULL)
+library("foreign")  # Loads the foreign package
+library("isdals", lib.loc="C:/my/private/R-packages/")
+
+
+Rule 5.4
+update.packages()
+update.packages(lib.loc="C:/my/private/R-packages/")
+
+
+Rule 5.5
+library()
+
+
+Rule 5.6
+help(package=foreign)
+
+
+Rule 5.7
+vignette(all=FALSE)  # List all attached vignettes
+vignette(all=TRUE)   # List all installed vignettes
+library(Matrix)
+vignette(all=FALSE, package="Matrix")
+vignette("Intro2Matrix")          # Show vignette
+vign <- vignette("Intro2Matrix")  # Store vignette
+edit(vign)                        # Extract/edit source code
+
+
+Rule 5.8
+# Read the installation script directly from BioConductor site
+source("http://bioconductor.org/biocLite.R")
+biocLite("limma")  # Install the limma package
+biocLite()         # Install the common BioConductor packages
+source("http://bioconductor.org/biocLite.R")
+update.packages(repos=biocinstallRepos(), ask=FALSE)
+
+
+Rule 5.9
+.libPaths()   # Example for ubuntu installation
+.libPaths()   # Example for Windows 7 installation
+Sys.getenv("R_LIBS_USER")   # On machine running Ubuntu
+Sys.getenv("R_LIBS_USER")   # On machine running WinXP
+Sys.getenv("R_LIBS_USER")   # On machine running Mac OS X
+.libPaths()
+
+
+Rule 5.10
+Sys.getenv("R_PROFILE")
+Sys.getenv("R_PROFILE_USER")
+# Identify the installation directory
+Sys.getenv("R_HOME")  # Output from machine running Ubuntu
+Sys.getenv("R_HOME")  # Output from machine running Windows XP 
+
+
+Rule 5.11
+# Create two vectors 
+x <- 1:5   
+myfactor <- factor(c("a", "b", "b", "b", "c", "c"))
+ls()                # List local objects
+x                   # Print x
+rm(x)               # Remove object x
+x                   # Try to print x
+ls()
+
+
+Rule 5.12
+getwd()          # Get the current working directory
+setwd("d:/")     # Set the current working directory to d:/
+
+
+Rule 5.13
+ls()                     # List the current objects
+x <- 1:5                 # Create a new vector
+ls()                     # List the current objects
+save.image("tmp/.RData") # Save the workspace to tmp/.RData
+q()                      # Quit R
+ls()                     # List the current objects
+load("tmp/.RData")       # Load the saved image
+ls()                     # List the current objects
+x
+
+
+Rule 5.14
+x <- 1:5
+y <- c(2, 3, 3, 1, 2)
+lm(y ~ x)
+savehistory("myanalysis.txt")
+loadhistory("myanalysis.txt")
+x                              # x is not found
+source("myanalysis.txt")
+ls()
+
+
+Rule 5.15
+dir()             # List files in the current working directory
+dir(pattern="^b") # List files starting with b
+file.copy("boxcox.r", "boxcox2.r")     # Copy file to boxcox2.r
+file.rename("boxcox2.r", "newrcode.r") # Rename to newrcode.r
+file.exists("newrcode.r")              # Check if file exists
+file.exists("boxcox2.r")               # Old file is gone
+file.remove("newrcode.r")              # Delete the file
+dir.create("newdir")                   # Make new directory
+basename("d:/ont/mention/the/war.txt")
+dirname("d:/ont/mention/the/war.txt")
+
+
+Rule 5.16
+mydata <- read.table(file.choose(), header=TRUE)
+library(tcltk)
+mydata <- read.table(tk_choose.files(), header=TRUE)
+
+
+Rule 5.17
+system("df -h")           # File system disk space usage (unix)
+system("fsutil volume diskfree c:")  # Disk usage (Windows)
+when <- system("date", intern=TRUE)
+when

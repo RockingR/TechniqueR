@@ -1,0 +1,343 @@
+---
+title: "R caculattion dummies"
+author: "Kenny"
+date: "Sunday, January 25, 2015"
+output: html_document
+---
+ 
+## Doing basic arithmetic
+ 
+### Using arithmetic operators
+
+```{r}
+
+baskets.of.Granny <- c(12,4,4,6,9,3)
+baskets.of.Geraldine <- c(5,3,2,2,12,9)
+ 
+Granny.money <- baskets.of.Granny * 120
+Granny.money
+Geraldine.money <- baskets.of.Geraldine * 145
+Geraldine.money 
+Granny.money + Geraldine.money
+ 
+baskets.of.Granny * 120 + baskets.of.Geraldine * 145
+ 
+```
+
+### Controlling the order of the operations
+
+```{r}
+4 + 2 * 3
+(4 + 2)* 3
+
+```
+
+ 
+## Using mathematical functions
+ 
+### Calculating logarithms and exponentials
+
+```{r}
+
+log(1:3)
+log(1:3,base=6)
+ 
+x <- log(1:3)
+exp(x)
+```
+
+ 
+### Putting the science in scientific notation
+
+```{r}
+
+1.33e4
+ 
+4.12e-2
+ 
+1.2e6 / 2e3
+ 
+
+```
+
+> **calculate**: ![](Rcal1.png)
+
+> **calculate**: ![](Rcal2.png)
+
+### Rounding numbers
+
+```{r}
+
+round(123.456,digits=2)
+round(-123.456,digits=-2) # pay attention to what digits = really mean
+
+# If you want to specify the number of significant digits to be retained, regardless of the size of the number, you use the signif() function instead:
+signif(-123.456,digits=4)
+
+```
+
+> **calculate**: ![](Rcal3.png)
+
+
+### Using trigonometric functions
+
+```{r}
+
+cos(120)
+cos(120*pi/180)
+ 
+```
+
+## Calculating whole vectors
+
+```{r}
+
+`+`(2,3)
+
+```
+ 
+##To infinity and beyond
+ 
+### Using infinity
+
+```{r}
+
+2/0
+4 - Inf
+is.finite(10^(305:310))
+
+### Dealing with undefined outcomes
+# Well, R tells you that the outcome is NaN. That result simply means Not a Number. This is R’s way of telling you that the outcome of that calculation is not defined.
+
+Inf / Inf
+NaN + 4
+
+
+```
+ 
+### Dealing with missing values
+
+> with missing values, R uses the reserved keyword NA, which stands for Not Available. You can use NA as a valid value, so you can assign it as a value as well:
+
+> calculations with a value of NA also generally return NA as a result:
+
+```{r}
+
+x <- NA
+x + 4
+ 
+log(x)
+ 
+is.na(x)
+
+```
+
+> **infinite, NaN and NA**: ![](Rcal4.png)
+
+> **infinite, NaN and NA**: ![](Rcal5.png)
+ 
+### Looking at the structure of a vector
+
+```{r}
+
+str(baskets.of.Granny)
+length(baskets.of.Granny)
+authors <- c("Andrie", "Joris")
+str(authors)
+ 
+### Testing vector types
+ 
+is.numeric(baskets.of.Granny)
+is.integer(baskets.of.Granny)
+ 
+x <- c(4L,6L)
+is.integer(x)
+
+```
+
+> **infinite, NaN and NA**: ![](Rcal6.png)
+
+
+```{r}
+
+## Creating vectors
+ 
+seq(from = 4.5, to = 2.5, by = -0.5)
+seq(from = -2.7, to = 1.3, length.out = 9)
+ 
+baskets.of.Granny <- c(12,4,4,6,9,3)
+baskets.of.Geraldine <- c(5,3,2,2,12,9)
+ 
+## Combining vectors
+ 
+all.baskets <-c(baskets.of.Granny, baskets.of.Geraldine)
+all.baskets
+
+```
+
+## Repeating vectors
+
+```{r}
+
+rep(c(0, 0, 7), times = 3)
+rep(c(2, 4, 2), each = 3)
+rep(c(0, 7), times = c(4,2))
+rep(1:3,length.out=7)
+
+```
+ 
+# Getting Values in and out of Vectors
+
+```{r}
+
+## Understanding indexing in R
+ 
+numbers <- 30:1
+numbers
+ 
+## Extracting values from a vector
+ 
+numbers[5]
+numbers[c(5,11,3)]
+ 
+indices <- c(5,11,3)
+numbers[indices]
+numbers[-3]
+numbers[-(1:20)]
+# numbers[-1:20] # NOT RUN, gives error
+ 
+## Changing values in a vector
+ 
+baskets.of.Granny[3] <- 5
+baskets.of.Granny
+ 
+baskets.of.Geraldine[c(2,4)] <- 4
+baskets.of.Geraldine
+ 
+Granny.copy <- baskets.of.Granny
+ 
+baskets.of.Granny[4] <- 11
+baskets.of.Granny
+ 
+baskets.of.Granny <- Granny.copy
+baskets.of.Granny
+
+```
+
+# Working with Logical Vectors
+
+```{r}
+## Comparing values
+
+baskets.of.Granny > 5
+which(baskets.of.Granny > 5)
+ 
+the.best <- baskets.of.Geraldine < baskets.of.Granny
+which(the.best)
+
+```
+
+ 
+## Using logical vectors as indices
+
+```{r}
+
+the.best
+baskets.of.Granny[the.best]
+x <- c(3, 6, 1, NA, 2)
+x[x > 2]
+x > 2
+
+```
+ 
+## Combining logical statements
+
+> **logical calculation**: ![](Rcal7.png)
+
+
+```{r}
+
+min.baskets <- baskets.of.Granny == min(baskets.of.Granny)
+max.baskets <- baskets.of.Granny == max(baskets.of.Granny)
+min.baskets
+max.baskets
+
+# This method actually isn’t the most efficient way to find those values. You see how to do things like this more efficiently with the match() function in Chapter 13. But this example clearly shows you how vectorization works for logical operators.
+min.baskets | max.baskets
+
+x
+x[!is.na(x)]
+
+```
+
+ 
+## Summarizing logical vectors
+
+> In addition, you have an easy way to figure out whether any value in a logical vector is TRUE. Very conveniently, the function that performs that task is called any(). To ask R whether Granny was better than Geraldine in any game, use this code:
+
+> We told you that Granny rocks! Well, okay, this result is a bit unfair for Geraldine, so you should check whether Granny was better than Geraldine in all the games. The R function you use for this purpose is called — surprise, surprise — all(). To find out whether Granny was always better than Geraldine, use the following code:
+
+```{r}
+
+the.best
+sum(the.best)
+any(the.best)
+all(the.best)
+
+```
+
+
+ 
+### Summarizing a vector
+
+```{r}
+baskets.of.Granny
+baskets.of.Geraldine
+min(baskets.of.Granny)
+ 
+max(baskets.of.Granny)
+sum(baskets.of.Granny,baskets.of.Geraldine)
+ 
+x <- c(3,6,2,NA,1)
+sum(x)
+sum(x,na.rm=TRUE)
+ 
+
+```
+
+### Cumulating operations
+
+```{r}
+
+cumsum(baskets.of.Granny)
+cummax(baskets.of.Geraldine)
+cummin(x)
+ 
+```
+
+### Calculating differences
+
+```{r}
+
+baskets.of.Granny
+diff(baskets.of.Granny)
+x
+diff(x)
+```
+
+ 
+## Recycling arguments
+
+```{r}
+
+Granny.pointers <- c(10,2,4,0,4,1,4,2,7,2,1,2)
+points <- Granny.pointers * c(2,3)
+points
+sum(points)
+ 
+sum(Granny.pointers * c(2,3))
+ 
+round(diff(baskets.of.Granny) / baskets.of.Granny * 100 )
+round(diff(baskets.of.Granny) / baskets.of.Granny[1:5] * 100)
+```
+
