@@ -1,0 +1,588 @@
+---
+title: "2. Subsetting Advanced"
+author: "Kenny"
+date: "Monday, February 02, 2015"
+output: word_document
+---
+
+> R’s subsetting operators are powerful and fast. 
+
+> Mastery of subsetting allows you to succinctly express complex operations in a way that few other languages can match. 
+
+> Subsetting is hard to learn because you need to master a number of interrelated concepts:   
+• The three subsetting operators.  
+• The six types of subsetting.  
+• Important differences in behaviour for different objects (e.g., vectors, lists, factors, matrices, and data frames).  
+• The use of subsetting in conjunction with assignment.  
+
+> the simplest type of subsetting: subsetting an atomic vector with [. 
+
+> then first to more complicated data types (like arrays and lists), and then to the other subsetting operators, [[ and $. 
+
+> how subsetting and assignment can be combined to modify parts of an object, you’ll see a large number of useful applications.
+
+> `str()` shows you **the structure of any object**, and `subsetting` allows you to **pull out the pieces** that you’re interested in.
+
+### **quizz**
+> 1. What is the result of subsetting a vector with positive integers, negative integers, a logical vector, or a character vector?
+
+> 2. What’s the difference between [, [[, and $ when applied to a list?
+
+> 3. When should you use drop = FALSE?
+
+> 4. If x is a matrix, what does x[] <- 0 do? How is it different to x <- 0?
+
+> 5. How can you use a named vector to relabel categorical variables?
+
+### **Outline**
+
+> teaching you about [.   
+
+> learning the six types of data that you can use to subset atomic vectors. 
+
+> six data types act when used to subset lists, matrices, data frames, and S3 objects.
+
+> subsetting operators to include [[ and $, focussing on the important principles of simplifying vs. preserving
+
+> learn the art of subassignment, combining subsetting and assignment to modify parts of an object.
+
+> eight important, but not obvious, applications of subsetting to solve problems in a data analysis.
+
+
+### **Data types**  
+
+```{r}
+x <- c(2.1, 4.2, 3.3, 5.4)
+```
+
+
+> There are **five things that you can use to subset a vector**:
+
+> `Positive integers` return elements at the `specified positions`:
+
+```{r}
+
+x[c(3, 1)]
+x[order(x)]
+x[c(1, 1)]
+x[c(2.1, 2.9)]
+
+```
+
+> `Negative integers` omit elements at the specified positions:
+
+```{r}
+
+x[-c(3, 1)]
+```
+
+
+> You `can’t mix positive and negative` integers in a single subset:
+
+```
+x[c(-1, 2)] # won't work
+```
+
+> `Logical vectors` select elements where the corresponding logical value is `TRUE`. 
+
+> This is probably the most useful type of subsetting because you write the expression that creates the logical vector:
+
+```{r}
+x[c(TRUE, TRUE, FALSE, FALSE)]
+
+x[x > 3]
+```
+
+
+> If the logical vector is `shorter` than the vector being subsetted, it will be `recycled` to be the same length.
+
+```{r}
+x[c(TRUE, FALSE)]
+x[c(TRUE, FALSE, TRUE, FALSE)]
+```
+
+> A `missing value` in the `index` always yields a missing value in the output:
+
+```{r}
+
+x[c(TRUE, TRUE, NA, FALSE)]
+```
+
+> `Nothing` returns the original vector.   
+- This is not useful for vectors but is very useful for matrices, data frames, and arrays.   
+- It can also be useful in conjunction with assignment.  
+
+```{r}
+
+x[]
+```
+
+> `Zero` returns a `zero-length vector`.   
+- This is not something you usually do on purpose     
+- but it can be helpful for generating test data.    
+
+```{r}
+
+x[0]
+```
+
+> If the vector is named, you can also use:  
+- Character vectors to return elements with matching names.  
+
+```{r}
+
+y <- setNames(x, letters[1: 4])
+y
+y[c("d", "c", "a")]
+
+# Like integer indices, you can repeat indices
+y[c("a", "a", "a")]
+
+# When subsetting with [ names are always matched exactly
+z <- c(abc = 1, def = 2)
+z[c("a", "d")]
+```
+
+## **Lists**  
+
+> Subsetting a list works in the same way as subsetting an atomic vector.   
+
+> Using `[` will always return a list; 
+
+> `[[ and $`, as described below, let you pull out the components of the list.
+
+###  **Matrices and arrays**  
+
+> You can subset higher-dimensional structures in three ways:  
+• With multiple vectors.  
+• With a single vector.  
+• With a matrix.  
+
+
+> The most common way of subsetting matrices (2d) and arrays (>2d): you supply a 1d index for each dimension, separated by a comma. 
+
+> Blank subsetting is now useful because it lets you keep all rows or all columns.
+
+```{r}
+
+a <- matrix(1: 9, nrow = 3)
+a
+colnames(a) <- c("A", "B", "C")
+a[1:2, ]
+a[c(T, F, T), c("B", "A")]
+a[0, -2]
+```
+
+
+> By default, [ will simplify the results to the lowest possible dimensionality. 
+
+> Because matrices and arrays are implemented as vectors with special attributes, you can subset them with a single vector. 
+
+> In that case, they will behave like a vector. Arrays in R are stored in column-major order:
+
+```{r}
+outer  # scientific mind practice
+vals <- outer(1: 5, 1: 5, FUN = "paste", sep = ",")
+vals[c(4, 15)]
+```
+
+
+> You can also subset higher-dimensional data structures with an integer
+matrix (or, if named, a character matrix).
+
+> Each row in the matrix specifies the location of one value, where each column corresponds to a
+dimension in the array being subsetted. 
+
+> This means that you use a 2 column matrix to subset a matrix, a 3 column matrix to subset a 3d array, and so on. 
+
+> The result is a vector of values:
+
+```{r}
+
+vals <- outer(1: 5, 1: 5, FUN = "paste", sep = ",")
+vals
+select <- matrix(ncol = 2, byrow = TRUE, c(
+                                                  1, 1,
+                                                  3, 1,
+                                                  2, 4
+))
+select
+vals[select]
+
+```
+
+### **Data frames**  
+
+> Data frames possess the `characteristics of both lists and matrices`:
+
+
+```{r}
+
+df <- data.frame(x = 1: 3, y = 3: 1, z = letters[1: 3])
+df[df$x == 2, ] #  
+
+
+df[c(1, 3), ]
+```
+
+
+
+> if you `subset with a single vector`, they behave like lists; 
+
+> if you `subset with two vectors`, they behave like matrices.
+
+```{r}
+
+# Like a list:
+df[c("x", "z")]
+str(df[c("x", "z")])
+typeof(df[c("x", "z")])
+
+# Like a matrix
+df[, c("x", "z")]
+str(df[, c("x", "z")])
+typeof(df[, c("x", "z")])
+```
+
+>  There's an important difference if you select a single column: matrix subsetting simplifies by default, list subsetting does not.
+
+
+```{r}
+df["x"]
+str(df["x"])
+typeof(df["x"])
+df[, "x"]
+str(df[, "x"])
+typeof(df[, "x"])
+```
+
+
+### **S3 objects** 
+
+> `S3 objects` are made up of atomic vectors, arrays, and lists
+
+> so you can always `pull apart` an `S3 object` using the techniques described above and the knowledge you gain from `str()`.
+
+### **S4 objects**  
+
+> There are also `two additional subsetting operators` that are needed for `S4 objects`: `@` (equivalent to `$`), and `slot()` (equivalent to `[[`). 
+
+> `@` is more restrictive than `$` in that it will return an error if the `slot` does not exist.
+
+
+
+### **Exercises**  
+
+> 1. Fix each of the following common data frame subsetting errors:
+
+```{r}
+mtcars[mtcars$cyl == 4, ]
+mtcars[1: 4, ]
+mtcars[mtcars$cyl < 5 | mtcars$cyl == 5, ] # it is not working
+mtcars[!mtcars$cyl > 5, ]
+mtcars[mtcars$cyl == 4 || mtcars$cyl == 6, ] # || produces it includes cyl ==8
+mtcars[mtcars$cyl == 4 | mtcars$cyl == 6, ]  # | is right, || is wrong
+```
+
+> 2. Why does x <- 1:5; x[NA] yield five missing values? (Hint: why is it different from x[NA_real_]?)
+
+```{r}
+
+x <- 1:5
+x[NA] # NA is logical, to be tested by all element
+x[NA_real_] # NA_real_ is numeric, specific position
+typeof(NA)
+typeof(NA_real_)
+```
+
+
+> 3. What does upper.tri() return? How does subsetting a matrix with it work? Do we need any additional subsetting rules to describe its behaviour?
+
+```{r}
+x <- outer(1: 5, 1: 5, FUN = "*")
+x
+upper.tri(x)  # return a matrix of F and T
+x[upper.tri(x)] # return a vector, not a matrix
+x[1:4] # due to its 2d atomic vector, [1:4] is working
+typeof(x) # double, atomic vector, not a list
+class(x) # matrix, not dataframe
+str(x) # num 
+
+m2 <- matrix(1:20, 4, 5)
+lower.tri(m2)           # not know why the number of F and T
+m2[lower.tri(m2)] <- NA
+m2
+```
+
+
+> 4. Why does mtcars[1:20] return a error? How does it differ from the similar mtcars[1:20, ]?
+
+```{r}
+typeof(mtcars) # list
+class(mtcars) # data frame
+str(mtcars) # 
+# mtcars[1:20] # same below
+# mtcars[c(1:20)] # wrong, "undefined column selected", not [1:4], has to specify columns
+mtcars[1:20, ]
+```
+
+> 5. Implement your own function that extracts the diagonal entries from a matrix (it should behave like diag(x) where x is a matrix).
+
+```{r}
+require(stats)
+dim(diag(3))
+diag(10, 3, 4) # guess what?
+```
+
+
+> 6. What does df[is.na(df)] <- 0 do? How does it work?
+
+```{r}
+df
+is.na(df)
+df[is.na(df)] <- 0 # nothing (F) is assigned to be 0
+df
+```
+
+## **Subsetting operators**  
+
+> There are two other subsetting operators: [[ and $. 
+
+> [[ is similar to [, except it can only return a single value and it allows you to pull pieces
+out of a list. 
+
+> $ is a useful shorthand for [[ combined with character subsetting.
+
+> You need [[ when working with lists. This is because when [ is applied to a list it always returns **a list**: it never gives you the **contents of the list**. 
+
+> To get the contents, you need [[: “If list x is a train carrying objects, then **`x[[5]]` is the object in car5**; `x[4:6]` is a train of cars 4-6.” — @RLangTip Because it can return only a single value, you must use [[ with either a single positive integer or a string
+
+```{r}
+
+x <- list(1, 2, 3, c("a", "c"), c(F, T), list(F,T))
+x[[5]] # return the vector of F and T
+x[4:6] # return a list include the 4th, 5th, 6th
+```
+
+
+
+```{r}
+
+a <- list(a = 1, b = 2)
+a
+a[[1]]
+a[["a"]]
+# If you do supply a vector it indexes recursively
+b <- list(a = list(b = list(c = list(d = 1))))
+b
+b[["a"]]
+b[[c("a","b")]]
+b[[c("a", "b", "c", "d")]]
+# Same as
+b[["a"]][["b"]]
+typeof(b[["a"]][["b"]])
+b[["a"]][["b"]][["c"]][["d"]]
+typeof(b[["a"]][["b"]][["c"]][["d"]])
+```
+
+> Because data frames are lists of columns, you can use `[[` to extract a column from data frames: 
+
+```{r}
+str(mtcars)
+mtcars[[1]] # vector
+typeof(mtcars[[1]]) # prove it
+mtcars[["cyl"]]
+typeof(mtcars[["cyl"]])
+```
+
+> `S3 and S4 objects` can `override` the standard behaviour of `[ and [[` so they **behave differently for different types of objects**. 
+
+> The key difference is usually how you select between `simplifying or preserving behaviours`, and what the default is
+
+## **Simplifying vs. preserving subsetting**  
+
+> It’s important to understand the distinction between simplifying and preserving subsetting. 
+
+> Simplifying subsets returns the simplest possible data structure that can represent the output, and is useful interactively because it usually gives you what you want. 
+
+> Preserving subsetting keeps the structure of the output the same as the input, and is generally better for programming because the result will always be the same type. 
+
+> `Omitting drop = FALSE` when subsetting matrices and data frames is one of the most common sources of programming errors.
+
+> (It will work for your test cases, but then someone will pass in a single column data frame and it will fail in an unexpected and unclear way.)
+
+> Unfortunately, how you switch between simplifying and preserving differs for different data types, as summarised in the table below.
+
+> **Subsetting**: ![](subset.png)
+
+> Preserving is the same for all data types: you get the same type of output as input. 
+
+> Simplifying behaviour varies slightly between different data types, as described below:
+
+> Atomic vector: removes names.
+
+```{r}
+
+x <- c(a = 1, b = 2)
+x[1]
+
+x[[1]]
+```
+
+
+> List: return the object inside the list, not a single element list.
+
+```{r}
+
+y <- list(a = 1, b = 2)
+str(y[1])
+
+str(y[[1]])
+```
+
+> Factor: drops any unused levels.
+
+```{r}
+
+z <- factor(c("a", "b"))
+z[1]
+z[1, drop = TRUE]
+
+```
+
+> Matrix or array: if any of the dimensions has length 1, drops that dimension.
+
+```{r}
+
+a <- matrix(1: 4, nrow = 2)
+a[1, , drop = FALSE]
+
+a[1, ]
+```
+
+
+> Data frame: if output is a single column, returns a vector instead of a data frame.
+
+```{r}
+
+df <- data.frame(a = 1: 2, b = 1: 2)
+str(df[1])
+
+str(df[[1]])
+
+str(df[, "a", drop = FALSE])
+
+str(df[, "a"])
+```
+
+## `$`  
+
+
+> `$` is a shorthand operator, where `x$y` is equivalent to `x[["y", exact = FALSE]]`. 
+
+> It’s often used to access variables in a data frame, as in `mtcars$cyl` or `diamonds$carat`.
+
+> One common mistake with `$` is to try and use it when you have the name of a column stored in a variable:
+
+```{r}
+
+var <- "cyl"
+# Doesn't work - mtcars$var translated to mtcars[["var"]]
+mtcars$var
+
+# Instead use [[
+mtcars[[var]]
+```
+
+
+> There’s one important difference between `$ and [[`. `$` does `partial matching`:
+
+```{r}
+
+x <- list(abc = 1)
+x$a
+x[["a"]]
+```
+
+
+> If you want to avoid this behaviour you can set the **global option** `warnPartialMatchDollar` to `TRUE`. Use with caution: it may affect behaviour in other code you have loaded (e.g., from a package).
+
+
+### **Missing/out of bounds indices**  
+
+> `[ and [[` differ slightly in their behaviour when the index is `out of bounds (OOB)`, 
+
+> for example, when you try to extract the fifth element of a length four vector, or subset a vector with NA or NULL:
+
+```{r}
+
+x <- 1: 4
+str(x[5])
+str(x[NA_real_])
+str(x[NULL])
+```
+
+> The following table summarises the results of subsetting atomic vectors and lists with [ and [[ and different types of OOB value.
+
+> **Difference between atomic and list**: ![](OOB.png)
+
+> If the input vector is named, then the names of OOB, missing, or NULL components will be "<NA>".
+
+### **Exercises** 
+> 1. Given a linear model, e.g., mod <- lm(mpg ~ wt, data = mtcars), extract the residual degrees of freedom. Extract the R squared from the model summary (summary(mod))
+
+```{r}
+
+mod <- lm(mpg ~ wt, data = mtcars)
+summary(mod)
+str(summary(mod))
+summary(mod)$r.squared
+```
+
+## **Subsetting and assignment**  
+
+> All subsetting operators can be combined with assignment to modify selected values of the input vector.
+
+```{r}
+
+x <- 1: 5
+x[c(1, 2)] <- 2: 3
+x
+```
+
+
+# The length of the LHS needs to match the RHS
+```{r}
+x[-1] <- 4: 1
+x
+
+```
+
+#> [1] 2 4 3 2 1
+# Note that there's no checking for duplicate indices
+```{r}
+x[c(1, 1)]
+x[c(1, 1)] <- 2:3
+x[c(1, 1)]
+x
+```
+
+#> [1] 3 4 3 2 1
+# You can't combine integer indices with NA
+x[c(1, NA)] <- c(1, 2)
+#> Error: NAs are not allowed in subscripted assignments
+# But you can combine logical indices with NA
+# (where they're treated as false).
+x[c(T, F, NA)] <- 1
+x
+#> [1] 1 4 3 1 1
+# This is mostly useful when conditionally modifying vectors
+df <- data.frame(a = c(1, 10, NA))
+df$a[df$a < 5] <- 0
+df$a
+#> [1] 0 10 NA
+
+
+
+
+
