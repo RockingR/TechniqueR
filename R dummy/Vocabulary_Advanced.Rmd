@@ -1,0 +1,85 @@
+---
+title: "Vocabulary_Advanced"
+author: "Kenny"
+date: "Sunday, February 08, 2015"
+output: html_document
+---
+### `%in%`
+  
+  
+```{r}
+
+1:10 %in% c(1,3,5,9)
+c(1,3,5,9) %in% 1:10
+```
+
+### `match`
+
+```{r}
+x <- 10:1
+y <- c(2, 5, 7)
+match(y, x) # find index of y in x
+morder <- match(y, x)
+x[morder] # use the index to reproduce y
+```
+
+```{r}
+for(i in 1:6) { 
+  nam <- paste("r", i, sep = ".") # now nam is already a string
+  print(nam) # object nam exist as string
+  assign(nam, 1:i) # without this code, no objects "r.1", "r.2"... can be created
+} 
+
+r.6
+get("r.3")  
+ls(pattern = "^r")
+```
+ 
+### assign() x as the variable name can only be one
+```{r}
+
+i <- 1:6
+nam <- paste("r", i, sep=".") # a vector of characters created
+nam
+assign(nam, i) # only one character string can be variable name
+r.1 # the first element character as name is r.1
+```
+
+```{r}
+##-- Global assignment within a function:
+myf <- function(x) {
+    innerf <- function(x) assign("Global.res", x^2, envir = .GlobalEnv)
+    innerf(x+1)
+}
+myf(3) # no return, as it is only assignment
+Global.res # Global.res become a global variable
+"Global.res"
+get("Global.res")
+
+a <- 1:4
+"a[1]"
+assign("a[1]", 2)
+"a[1]"
+a[1]
+a[1] == 2          # FALSE
+get("a[1]") == 2   # TRUE
+get("a[1]")
+
+assign("myx", 3)
+myx
+get("myx")
+
+assign("my", 1:3)
+my
+get("my")
+```
+
+
+### `get`  
+
+```{r}
+get("%o%")
+e1  <- new.env()
+mget(letters, e1, ifnotfound = as.list(LETTERS))
+```
+

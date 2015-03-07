@@ -1,0 +1,54 @@
+---
+output: html_document
+---
+```{r}
+
+add <- function(x){
+   function(y) x + y
+ }
+ 
+ adders <- lapply(1:10, add)
+ adders
+ adders[[1]]
+ adders[[1]](1)
+adders[[2]](1)
+adders[[2]](2)
+adders[[5]](10)
+adders[[10]](10)
+```
+
+```{r}
+
+
+add <- function(x) {
+  x
+  function(y) x + y
+}
+
+adders2 <- lapply(1:10, add) 
+adders2
+adders2[[1]]
+adders2[[1]](1)
+adders2[[2]](1)
+adders2[[2]](2)
+adders2[[5]](10)
+adders2[[10]](10)
+```
+
+```{r}
+f <- function(x = ls()) {
+  a <- 1
+  x
+  a
+  x
+  print(a)
+  print(x)
+}
+
+f() # ls() only display objects inside function f env
+
+f(ls()) # ls() only display objects inside global env
+
+```
+
+
